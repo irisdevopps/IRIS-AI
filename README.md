@@ -321,7 +321,6 @@ iris/
 # 🧠 Development Philosophy
 
 - Execution > Conversation
-- Local-first intelligence
 - Modular system design
 - Real-world usability
 
