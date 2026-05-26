@@ -27,10 +27,8 @@ const TitleBar = () => {
 
   return (
     <div className="w-full h-14 flex items-center justify-between px-0 bg-zinc-950/80 backdrop-blur-2xl border-b border-zinc-800/50 drag-region select-none z-50 relative overflow-hidden">
-      {/* Ambient linear line */}
       <div className="absolute bottom-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-emerald-500/20 to-transparent" />
 
-      {/* Left Section */}
       <div className="flex items-center h-full pl-5 pr-3 gap-3 z-50 no-drag">
         {isMac ? (
           <div className="flex items-center gap-2.5">
