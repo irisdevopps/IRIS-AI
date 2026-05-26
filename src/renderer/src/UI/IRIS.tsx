@@ -80,9 +80,9 @@ const IRIS = (props: IrisProps) => {
         <div className="hidden lg:flex items-center gap-3">
           <RiShieldFlashLine className="text-emerald-500 text-xl animate-pulse" />
           <div className="flex flex-col leading-none">
-            <span className="font-black tracking-[0.2em] text-sm text-zinc-100">IRIS AI</span>
-            <span className="text-[11px] font-mono text-emerald-500/60 tracking-widest">
-              Voice Assistant
+            <span className="font-black tracking-widest text-lg text-zinc-100">IRIS AI</span>
+            <span className="text-[12px] font-mono text-emerald-500/60 tracking-wide">
+              Advanced Voice Assistant
             </span>
           </div>
         </div>
