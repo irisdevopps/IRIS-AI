@@ -9,7 +9,7 @@
     <img src="https://img.shields.io/github/stars/IRISX-AI/IRIS-AI?style=for-the-badge&color=10b981&logo=github&logoColor=white" alt="GitHub stars">
   </a>
   <a href="https://github.com/IRISX-AI/IRIS-AI/network/members">
-    <img src="https://img.shields.io/github/forks/IRISX-AI/IRIS-AI?style=for-the-badge&color=10b981&logo=git&logoColor=white" alt="GitHub forks">
+    <img src="https://img.shields.io/github/forks/201Harsh/IRIS-AI?style=for-the-badge&color=10b981&logo=git&logoColor=white" alt="GitHub forks">
   </a>
   <a href="https://github.com/IRISX-AI/IRIS-AI/graphs/contributors">
     <img src="https://img.shields.io/github/contributors/IRISX-AI/IRIS-AI?style=for-the-badge&color=10b981&logo=users&logoColor=white" alt="Contributors">
