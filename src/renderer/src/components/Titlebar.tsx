@@ -28,9 +28,9 @@ export default function TitleBar() {
   const close = () => window.electron.ipcRenderer.send('window-close')
 
   return (
-    <div className="w-full h-14 flex items-center justify-between bg-[#050505] border-b border-white/[0.05] drag-region select-none z-50 relative">
+    <div className="w-full h-14 flex items-center justify-between bg-[#050505] border-b border-white/5 drag-region select-none z-50 relative">
       {/* ── LEFT: Heavy Branding ── */}
-      <div className="flex items-center h-full min-w-[200px] pl-5 no-drag">
+      <div className="flex items-center h-full min-w-500 pl-5 no-drag">
         {isMac ? (
           <div className="flex items-center gap-2.5 group/mac">
             <button
