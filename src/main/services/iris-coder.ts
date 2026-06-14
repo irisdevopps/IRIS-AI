@@ -4,9 +4,7 @@ import { app, BrowserWindow } from 'electron'
 import { exec } from 'child_process'
 import { GoogleGenAI } from '@google/genai'
 
-// --- Internal Helpers ---
 
-// Safely resolve the path at runtime and ensure the directory exists
 function getProjectsDir(): string {
   const projectsDir = path.resolve(app.getPath('userData'), 'Projects')
   if (!fs.existsSync(projectsDir)) {
@@ -15,7 +13,6 @@ function getProjectsDir(): string {
   return projectsDir
 }
 
-// Route the streaming chunks directly to the frontend terminal/UI
 function emitCodeChunk(chunk: string) {
   const win = BrowserWindow.getAllWindows()[0]
   if (win && !win.isDestroyed()) {
@@ -23,7 +20,6 @@ function emitCodeChunk(chunk: string) {
   }
 }
 
-// --- Exported Direct Functions ---
 
 export async function startLiveCoding({
   prompt,
@@ -38,7 +34,6 @@ export async function startLiveCoding({
     const projectsDir = getProjectsDir()
     const filePath = path.join(projectsDir, filename)
 
-    // Write the initial connection log
     fs.writeFileSync(filePath, '// Boss, connection established. Waiting for AI stream...\n')
 
     if (!geminiKey || geminiKey.trim() === '') {
@@ -54,7 +49,6 @@ export async function startLiveCoding({
 
     let fullCode = ''
 
-    // Stream the chunks back to the UI in real-time
     for await (const chunk of response) {
       if (chunk.text) {
         fullCode += chunk.text
@@ -62,7 +56,6 @@ export async function startLiveCoding({
       }
     }
 
-    // Save the finalized file to disk
     fs.writeFileSync(filePath, fullCode)
     return { success: true, filePath }
   } catch (err) {
@@ -73,7 +66,6 @@ export async function startLiveCoding({
 
 export async function openInVsCode(filePath: string) {
   try {
-    // Execute the command natively to pop open the editor
     exec(`code "${filePath}"`)
     return { success: true }
   } catch (err) {
