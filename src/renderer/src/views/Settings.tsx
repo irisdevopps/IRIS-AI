@@ -245,7 +245,7 @@ export default function SettingsView({ isSystemActive }: SettingsProps) {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setActiveTab(tab.id as TabType)}
-                className={`flex items-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap ${
+                className={`cursor-pointer flex items-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap ${
                   activeTab === tab.id
                     ? 'bg-white text-black shadow-md'
                     : 'text-zinc-400 hover:text-white hover:bg-white/5'
@@ -419,7 +419,7 @@ export default function SettingsView({ isSystemActive }: SettingsProps) {
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={saveApiKeys}
-                      className="bg-emerald-500 text-black px-6 py-2.5 rounded-xl text-sm font-bold shadow-lg flex items-center gap-2"
+                      className="bg-emerald-500 cursor-pointer text-black px-6 py-2.5 rounded-xl text-sm font-bold shadow-lg flex items-center gap-2"
                     >
                       <RiSave3Line size={18} /> Save Keys
                     </motion.button>
@@ -533,7 +533,7 @@ export default function SettingsView({ isSystemActive }: SettingsProps) {
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={unlockSecurityModule}
-                            className="h-full px-8 bg-white text-black text-sm font-bold rounded-xl transition-all"
+                            className="h-full px-8 cursor-pointer bg-white text-black text-sm font-bold rounded-xl transition-all"
                           >
                             Unlock
                           </motion.button>
@@ -567,7 +567,7 @@ export default function SettingsView({ isSystemActive }: SettingsProps) {
                           <motion.button
                             whileTap={{ scale: 0.9 }}
                             onClick={updateMasterPin}
-                            className="text-zinc-400 hover:text-white transition-colors ml-2 bg-white/5 p-2 rounded-lg"
+                            className="text-zinc-400 cursor-pointer hover:text-white transition-colors ml-2 bg-white/5 p-2 rounded-lg"
                           >
                             <RiSave3Line size={20} />
                           </motion.button>
@@ -611,7 +611,7 @@ export default function SettingsView({ isSystemActive }: SettingsProps) {
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={startFaceEnrollment}
-                            className="w-full py-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all mt-6"
+                            className="w-full py-3 rounded-xl cursor-pointer bg-white/10 hover:bg-white/20 border border-white/10 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all mt-6"
                           >
                             <RiAddLine size={18} /> Add New Face
                           </motion.button>
