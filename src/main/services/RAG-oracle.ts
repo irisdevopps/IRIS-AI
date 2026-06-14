@@ -5,7 +5,6 @@ import crypto from 'crypto'
 import { GoogleGenAI } from '@google/genai'
 import Groq from 'groq-sdk'
 
-// --- Internal Helpers ---
 
 const getStateDir = () => path.join(app.getPath('userData'), 'iris_scan_states')
 
@@ -37,7 +36,6 @@ const loadState = async (dirPath: string): Promise<ScanState | null> => {
   }
 }
 
-// Safely broadcast progress updates to the frontend UI
 function emitProgress(payload: any) {
   const win = BrowserWindow.getAllWindows()[0]
   if (win && !win.isDestroyed()) {
@@ -45,7 +43,6 @@ function emitProgress(payload: any) {
   }
 }
 
-// Module-level state
 let vectorDB: { filePath: string; chunk: string; embedding: number[] }[] = []
 let processedFiles = new Set<string>()
 let isCancelled = false
@@ -64,7 +61,6 @@ const cosineSimilarity = (vecA: number[], vecB: number[]) => {
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
-// --- Exported Direct Functions ---
 
 export async function cancelIngestion() {
   isCancelled = true
