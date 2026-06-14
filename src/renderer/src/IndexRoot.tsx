@@ -21,12 +21,6 @@ import { Status } from './types/panel'
 export type VisionMode = 'camera' | 'screen' | 'none'
 
 const IndexRoot = () => {
-  const [isConnected, setIsConnected] = useState(false)
-  const [activeTab, setActiveTab] = useState('Dashboard')
-  const [systemStatus, setSystemStatus] = useState<Status>('STANDBY')
-  const [isSpeaking, setIsSpeaking] = useState(false)
-  const [isMuted, setIsMuted] = useState(false)
-
   const [isOverlay, setIsOverlay] = useState(false)
 
   const [isSystemActive, setIsSystemActive] = useState(false)
@@ -39,153 +33,65 @@ const IndexRoot = () => {
   const activeStreamRef = useRef<MediaStream | null>(null)
   const aiIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
+  const [isBooting, setIsBooting] = useState(true)
+  const [isConnected, setIsConnected] = useState(false)
+  const [activeTab, setActiveTab] = useState('Dashboard')
+  const [systemStatus, setSystemStatus] = useState<Status>('STANDBY')
+  const [isSpeaking, setIsSpeaking] = useState(false)
+  const [isMuted, setIsMuted] = useState(false)
+
   useEffect(() => {
-    window.electron.ipcRenderer.on('overlay-mode', (_e, mode) => setIsOverlay(mode))
-    return () => {
-      window.electron.ipcRenderer.removeAllListeners('overlay-mode')
+    if ((window as any).iris) {
+      ;(window as any).iris.onSystemStatus((status: any) => {
+        setSystemStatus(status)
+      })
+      ;(window as any).iris.onSpeakingState((speaking: boolean) => {
+        setIsSpeaking(speaking)
+      })
     }
   }, [])
 
-  useEffect(() => {
-    const watchdog = setInterval(() => {
-      if (isSystemActive && !irisService.isConnected) {
-        setIsSystemActive(false)
-        setIsMicMuted(true)
-        stopVision()
-      }
-    }, 1000)
-    return () => clearInterval(watchdog)
-  }, [isSystemActive])
-
-  const toggleSystem = async () => {
-    if (!isSystemActive) {
-      try {
-        await irisService.connect()
-        setIsSystemActive(true)
-        setIsMicMuted(false)
-        irisService.setMute(false)
-      } catch (err: any) {
-        if (err.message === 'NO_API_KEY') {
-          alert(
-            '⚠️ CRITICAL ERROR: Gemini API Key is missing. Please enter it in the Command Center Vault (Settings Tab).'
-          )
-        } else {
-          alert(`Connection failed: ${err.message}`)
-        }
-        setIsSystemActive(false)
-      }
+  const toggleConnection = () => {
+    if (isConnected) {
+      // @ts-ignore
+      window.iris.stopSession()
+      setIsConnected(false)
+      setSystemStatus('STANDBY')
+      setIsMuted(false)
     } else {
-      irisService.disconnect()
-      setIsSystemActive(false)
-      setIsMicMuted(true)
-      irisService.setMute(true)
-      stopVision()
+      // @ts-ignore
+      window.iris.startSession()
+      setTimeout(() => {
+        setIsConnected(true)
+        setSystemStatus('CONNECTING')
+      }, 1500)
     }
   }
 
-  const toggleMic = () => {
-    const s = !isMicMuted
-    setIsMicMuted(s)
-    irisService.setMute(s)
-  }
-
-  const startVision = async (mode: 'camera' | 'screen') => {
-    if (!isSystemActive) return
-
-    try {
-      if (activeStreamRef.current) {
-        activeStreamRef.current.getTracks().forEach((t) => t.stop())
-      }
-
-      let stream: MediaStream
-
-      if (mode === 'camera') {
-        stream = await navigator.mediaDevices.getUserMedia({
-          video: { width: 640, height: 480 }
-        })
-      } else {
-        const sourceId = await getScreenSourceId()
-        if (!sourceId) return
-        stream = await navigator.mediaDevices.getUserMedia({
-          audio: false,
-          video: {
-            // @ts-ignore
-            mandatory: {
-              chromeMediaSource: 'desktop',
-              chromeMediaSourceId: sourceId,
-              maxWidth: 1280,
-              maxHeight: 720
-            }
-          }
-        })
-      }
-
-      activeStreamRef.current = stream
-
-      processingVideoRef.current.srcObject = stream
-      await processingVideoRef.current.play()
-
-      setVisionMode(mode)
-      setIsVideoOn(true)
-
-      startAIProcessing()
-
-      stream.getVideoTracks()[0].onended = () => stopVision()
-    } catch (e) {
-      stopVision()
+  const handleMicToggle = () => {
+    const nextMutedState = !isMuted
+    setIsMuted(nextMutedState)
+    if ((window as any).iris?.toggleMic) {
+      ;(window as any).iris.toggleMic(nextMutedState)
     }
   }
 
-  const stopVision = () => {
-    setIsVideoOn(false)
-    setVisionMode('none')
-
-    if (activeStreamRef.current) {
-      activeStreamRef.current.getTracks().forEach((t) => t.stop())
-      activeStreamRef.current = null
-    }
-
-    if (processingVideoRef.current) {
-      processingVideoRef.current.srcObject = null
-    }
-
-    if (aiIntervalRef.current) {
-      clearInterval(aiIntervalRef.current)
-      aiIntervalRef.current = null
-    }
-  }
-
-  const startAIProcessing = () => {
-    if (aiIntervalRef.current) clearInterval(aiIntervalRef.current)
-
-    aiIntervalRef.current = setInterval(() => {
-      const vid = processingVideoRef.current
-      if (vid && vid.readyState === 4 && irisService.socket?.readyState === WebSocket.OPEN) {
-        const canvas = document.createElement('canvas')
-        canvas.width = 800
-        canvas.height = 450
-        const ctx = canvas.getContext('2d')
-        if (ctx) {
-          ctx.drawImage(vid, 0, 0, canvas.width, canvas.height)
-          const base64 = canvas.toDataURL('image/jpeg', 0.6).split(',')[1]
-          irisService.sendVideoFrame(base64)
-        }
-      }
-    }, 2000)
+  const getNavStyle = (tabName: string) => {
+    return activeTab === tabName
+      ? 'text-white border-b border-white pb-1'
+      : 'text-zinc-500 hover:text-zinc-300 transition-colors'
   }
 
   if (isOverlay) {
     return (
       <div className="w-screen h-screen overflow-hidden flex items-center justify-center bg-transparent">
         <MiniOverlay
-          isSystemActive={isSystemActive}
-          toggleSystem={toggleSystem}
-          isMicMuted={isMicMuted}
-          toggleMic={toggleMic}
-          isVideoOn={isVideoOn}
-          visionMode={visionMode}
-          startVision={startVision}
-          stopVision={stopVision}
+          isConnected={isConnected}
+          toggleConnection={toggleConnection}
+          systemStatus={systemStatus}
+          isSpeaking={isSpeaking}
+          isMuted={isMuted}
+          handleMicToggle={handleMicToggle}
         />
       </div>
     )
@@ -196,15 +102,12 @@ const IndexRoot = () => {
       <TitleBar />
       <div className="flex-1 relative">
         <IRIS
-          isSystemActive={isSystemActive}
-          toggleSystem={toggleSystem}
-          isMicMuted={isMicMuted}
-          toggleMic={toggleMic}
-          isVideoOn={isVideoOn}
-          visionMode={visionMode}
-          startVision={startVision}
-          stopVision={stopVision}
-          activeStream={activeStreamRef.current}
+          isConnected={isConnected}
+          toggleConnection={toggleConnection}
+          systemStatus={systemStatus}
+          isSpeaking={isSpeaking}
+          isMuted={isMuted}
+          handleMicToggle={handleMicToggle}
         />
       </div>
       <SmartDropZonesWidget />

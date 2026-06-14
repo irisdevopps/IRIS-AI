@@ -20,6 +20,7 @@ import ViewSkeleton from '@renderer/components/ViewSkelrton'
 import DashboardView from '../views/Dashboard'
 import PhoneView from '../views/Phone'
 import { VisionMode } from '@renderer/IndexRoot'
+import { Status } from '@renderer/types/panel'
 
 // const AppsView = lazy(() => import('../views/APP'))
 const WorkFlowEditorView = lazy(() => import('../views/WorkFlowEditor'))
@@ -28,15 +29,12 @@ const SettingsView = lazy(() => import('../views/Settings'))
 const GalleryView = lazy(() => import('../views/Gallery'))
 
 interface IrisProps {
-  isSystemActive: boolean
-  toggleSystem: () => void
-  isMicMuted: boolean
-  toggleMic: () => void
-  isVideoOn: boolean
-  visionMode: VisionMode
-  startVision: (mode: 'camera' | 'screen') => void
-  stopVision: () => void
-  activeStream: MediaStream | null
+  isConnected: boolean
+  toggleConnection: () => void
+  systemStatus: Status
+  isSpeaking: boolean
+  isMuted: boolean
+  handleMicToggle: () => void
 }
 
 const glassPanel = 'bg-zinc-950/40 backdrop-blur-xl border border-white/5 rounded-2xl shadow-xl'
