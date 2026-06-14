@@ -57,7 +57,7 @@ const IRIS = ({
       <div className="h-16 w-full flex items-center justify-between px-6 bg-black border-b border-white/5 z-50">
         {/* Left: Branding */}
         <div className="flex items-center gap-3 w-48 cursor-pointer">
-          <img src="/Logo.png" className="w-15 h-15" />
+          <img src="/Logo.png" className="w-14 h-14" />
 
           <div
             onClick={() => {
@@ -65,7 +65,7 @@ const IRIS = ({
             }}
             className="flex flex-col leading-none"
           >
-            <span className="font-black tracking-widest text-[14px] text-zinc-100 uppercase">
+            <span className="font-black tracking-widest text-[14px] text-zinc-100 uppercase -ml-1.5">
               IRIS AI
             </span>
           </div>
