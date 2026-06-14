@@ -7,7 +7,9 @@ import {
   Thermometer,
   Monitor,
   ArrowUp,
-  ArrowDown
+  ArrowDown,
+  Zap,
+  Radio
 } from 'lucide-react'
 import { getSystemStatus, SystemStats } from '@renderer/services/system-info'
 import { LeftPanelsProps } from '@renderer/types/panel'
@@ -18,142 +20,237 @@ function getHealthColor(value: number, type: 'cpu' | 'ram' | 'temp') {
     ratio = Math.min(1, Math.max(0, (value - 20) / 50))
   }
   const hue = 120 * (1 - ratio)
-  const saturation = 85
+  const saturation = 90
   const lightness = 50
   const mainColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`
   const darkColor = `hsl(${hue}, ${saturation}%, 15%)`
-  const linear = `linear-linear(90deg, ${darkColor}, ${mainColor})`
+  const linear = `linear-gradient(90deg, ${darkColor}, ${mainColor})`
   const glow = mainColor
   return { linear, glow }
 }
 
-function StatusDot({ active }: { active: boolean }) {
+function PulseIndicator({ active, color = '#00ff88' }: { active: boolean; color?: string }) {
   return (
-    <span className="relative flex h-2 w-2">
+    <span className="relative flex h-2.5 w-2.5">
       {active && (
-        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00ff88] opacity-60" />
+        <>
+          <span
+            className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-50"
+            style={{ background: color }}
+          />
+          <span
+            className="absolute inline-flex h-full w-full animate-pulse rounded-full"
+            style={{ background: color, opacity: 0.3 }}
+          />
+        </>
       )}
       <span
-        className={`relative inline-flex h-2 w-2 rounded-full ${
-          active ? 'bg-[#00ff88] shadow-[0_0_8px_#00ff88]' : 'bg-slate-600'
-        }`}
+        className="relative inline-flex h-2.5 w-2.5 rounded-full shadow-lg"
+        style={{
+          background: active ? color : '#374151',
+          boxShadow: active ? `0 0 12px ${color}` : 'none'
+        }}
       />
     </span>
   )
 }
 
-function GlassPanel({ children, className = '', accent = 'green' }: any) {
-  const accentMap: Record<string, string> = {
-    green: 'from-[#00ff88]/[0.04]',
-    cyan: 'from-[#22d3ee]/[0.04]',
-    orange: 'from-[#f97316]/[0.04]',
-    yellow: 'from-[#eab308]/[0.04]',
-    purple: 'from-[#a855f7]/[0.04]',
-    none: 'from-transparent'
+function PremiumGlassPanel({
+  children,
+  className = '',
+  accent = 'green',
+  glow = false
+}: {
+  children: React.ReactNode
+  className?: string
+  accent?: 'green' | 'cyan' | 'orange' | 'blue' | 'purple' | 'none'
+  glow?: boolean
+}) {
+  const accentMap: Record<string, { bg: string; border: string; glow: string }> = {
+    green: {
+      bg: 'from-[#00ff88]/[0.03] to-[#00ff88]/[0.01]',
+      border: 'border-[#00ff88]/15 hover:border-[#00ff88]/25',
+      glow: '#00ff88'
+    },
+    cyan: {
+      bg: 'from-[#22d3ee]/[0.03] to-[#22d3ee]/[0.01]',
+      border: 'border-[#22d3ee]/15 hover:border-[#22d3ee]/25',
+      glow: '#22d3ee'
+    },
+    orange: {
+      bg: 'from-[#f97316]/[0.03] to-[#f97316]/[0.01]',
+      border: 'border-[#f97316]/15 hover:border-[#f97316]/25',
+      glow: '#f97316'
+    },
+    blue: {
+      bg: 'from-[#3b82f6]/[0.03] to-[#3b82f6]/[0.01]',
+      border: 'border-[#3b82f6]/15 hover:border-[#3b82f6]/25',
+      glow: '#3b82f6'
+    },
+    purple: {
+      bg: 'from-[#a855f7]/[0.03] to-[#a855f7]/[0.01]',
+      border: 'border-[#a855f7]/15 hover:border-[#a855f7]/25',
+      glow: '#a855f7'
+    },
+    none: {
+      bg: 'from-white/[0.02] to-white/[0.01]',
+      border: 'border-white/8 hover:border-white/12',
+      glow: '#ffffff'
+    }
   }
+
+  const config = accentMap[accent]
+
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl bg-[#080d0b]/70 backdrop-blur-2xl border border-white/[0.07] shadow-[0_8px_32px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.04)] transition-all duration-300 hover:border-white/10 ${className}`}
+      className={`group relative overflow-hidden rounded-2xl bg-gradient-to-br ${config.bg} backdrop-blur-3xl border ${config.border} shadow-xl transition-all duration-300 ${
+        glow ? 'hover:shadow-2xl' : ''
+      } ${className}`}
+      style={
+        glow
+          ? {
+              boxShadow: `0 0 20px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 0 40px ${config.glow}15`
+            }
+          : {}
+      }
     >
+      {/* Top accent line */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent z-0" />
+
+      {/* Ambient glow background */}
       <div
-        className={`pointer-events-none absolute inset-0 bg-linear-to-br ${accentMap[accent]} to-transparent z-0`}
+        className={`pointer-events-none absolute -inset-1/3 opacity-0 group-hover:opacity-20 transition-opacity duration-500 blur-3xl z-0`}
+        style={{ background: config.glow }}
       />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-white/10 to-transparent z-0" />
+
+      {/* Noise texture */}
+      <div className="pointer-events-none absolute inset-0 opacity-[0.02] mix-blend-screen z-0" />
+
       <div className="relative z-10 h-full flex flex-col">{children}</div>
     </div>
   )
 }
 
-function NeonBar({ value, color, glow }: { value: number; color: string; glow: string }) {
+function NeonProgressBar({
+  value,
+  color,
+  glow,
+  showValue = false
+}: {
+  value: number
+  color: string
+  glow: string
+  showValue?: boolean
+}) {
   const safeValue = Math.min(100, Math.max(0, value || 0))
   return (
-    <div className="relative h-0.75 w-full overflow-hidden rounded-full bg-white/5">
-      <div
-        className="absolute left-0 top-0 h-full rounded-full transition-all duration-1000 ease-out"
-        style={{
-          width: `${safeValue}%`,
-          background: color,
-          boxShadow: `0 0 8px ${glow}, 0 0 16px ${glow}55`
-        }}
-      />
-      <div
-        className="absolute left-0 top-0 h-full w-full rounded-full opacity-30"
-        style={{
-          background: `linear-linear(90deg, transparent 0%, rgba(255,255,255,0.2) 50%, transparent 100%)`,
-          animation: 'shimmer 2s infinite',
-          backgroundSize: '200% 100%'
-        }}
-      />
+    <div className="flex items-center gap-2 w-full">
+      <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-white/5 border border-white/5">
+        {/* Background glow */}
+        <div
+          className="absolute inset-0 rounded-full opacity-30 blur-md transition-all duration-500"
+          style={{
+            width: `${safeValue}%`,
+            background: color,
+            filter: `blur(4px)`
+          }}
+        />
+
+        {/* Main bar */}
+        <div
+          className="absolute left-0 top-0 h-full rounded-full transition-all duration-700 ease-out"
+          style={{
+            width: `${safeValue}%`,
+            background: color,
+            boxShadow: `0 0 12px ${glow}, 0 0 24px ${glow}66, inset 0 1px 0 rgba(255,255,255,0.2)`
+          }}
+        />
+
+        {/* Shimmer effect */}
+        <div
+          className="absolute inset-0 rounded-full opacity-40"
+          style={{
+            background: `linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)`,
+            animation: 'shimmer 3s infinite',
+            backgroundSize: '200% 100%'
+          }}
+        />
+      </div>
+      {showValue && (
+        <span className="font-mono text-xs font-semibold text-white/70 min-w-[2.5rem] text-right">
+          {Math.round(safeValue)}%
+        </span>
+      )}
     </div>
   )
 }
 
-function IconRing({ children, color }: { children: React.ReactNode; color: string }) {
-  return (
-    <div
-      className="flex h-8 w-8 items-center justify-center rounded-xl border"
-      style={{
-        borderColor: `${color}33`,
-        background: `${color}11`,
-        boxShadow: `0 0 12px ${color}22`
-      }}
-    >
-      {children}
-    </div>
-  )
-}
-
-function MetricCard({
-  icon,
-  watermarkIcon,
-  label,
+function MetricValue({
   value,
   unit,
-  barValue,
-  barColor,
-  barGlow,
-  accentColor,
-  children
-}: any) {
+  status,
+  prefix = ''
+}: {
+  value: string | number
+  unit?: string
+  status?: 'good' | 'warning' | 'critical' | 'idle'
+  prefix?: string
+}) {
+  const statusColors = {
+    good: 'text-[#00ff88]',
+    warning: 'text-[#f97316]',
+    critical: 'text-[#ef4444]',
+    idle: 'text-slate-400'
+  }
+
   return (
-    <GlassPanel className="flex flex-col gap-3 p-4 group" accent="none">
-      <div
-        className="pointer-events-none absolute -right-8 -top-8 h-20 w-20 rounded-full opacity-10 blur-2xl transition-opacity duration-500 group-hover:opacity-30"
-        style={{ background: accentColor }}
-      />
-      {watermarkIcon && (
-        <div
-          className="absolute -bottom-6 -right-6 opacity-[0.05] group-hover:scale-110 group-hover:opacity-[0.12] transition-all duration-700 pointer-events-none"
-          style={{ color: accentColor }}
-        >
-          {watermarkIcon}
-        </div>
+    <div className="flex items-baseline gap-1">
+      {prefix && <span className="font-mono text-xs text-white/40 font-light">{prefix}</span>}
+      <span
+        className={`font-mono font-bold text-2xl tracking-tight ${statusColors[status || 'idle']} drop-shadow-lg`}
+      >
+        {value}
+      </span>
+      {unit && (
+        <span className="font-mono text-xs text-white/40 font-light tracking-wide">{unit}</span>
       )}
-      <div className="flex items-center justify-between">
-        <IconRing color={accentColor}>{icon}</IconRing>
-        <span
-          className="font-mono text-[8px] tracking-[0.22em] uppercase"
-          style={{ color: `${accentColor}99` }}
-        >
-          {label}
-        </span>
-      </div>
-      <div className="flex-1 flex flex-col justify-end">
-        {children ?? (
-          <div className="flex flex-col gap-2">
-            <div className="text-right font-mono text-xl font-semibold leading-none tracking-wider text-white drop-shadow-md">
-              {value}{' '}
-              {unit && <span className="ml-0.5 text-xs font-normal text-white/30">{unit}</span>}
-            </div>
-            {barValue !== undefined && <NeonBar value={barValue} color={barColor} glow={barGlow} />}
-          </div>
-        )}
-      </div>
-    </GlassPanel>
+    </div>
   )
 }
 
-export default function LeftPanels({
+function IconBadge({
+  icon,
+  color,
+  label,
+  active = true
+}: {
+  icon: React.ReactNode
+  color: string
+  label?: string
+  active?: boolean
+}) {
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <div
+        className="flex h-10 w-10 items-center justify-center rounded-xl border backdrop-blur-sm transition-all duration-300 group-hover:scale-110"
+        style={{
+          borderColor: active ? `${color}44` : 'rgba(255,255,255,0.1)',
+          background: active ? `${color}11` : 'rgba(0,0,0,0.2)',
+          boxShadow: active ? `0 0 16px ${color}33` : 'none'
+        }}
+      >
+        <div style={{ color: active ? color : 'rgba(255,255,255,0.3)' }}>{icon}</div>
+      </div>
+      {label && (
+        <span className="font-mono text-[7px] tracking-widest text-white/50 uppercase text-center">
+          {label}
+        </span>
+      )}
+    </div>
+  )
+}
+
+export default function LeftPanelsPremium({
   status,
   visionMode
 }: LeftPanelsProps & { visionMode?: 'off' | 'camera' | 'screen' }) {
@@ -173,7 +270,7 @@ export default function LeftPanels({
     network: { tx: 0, rx: 0, latency: 0 }
   })
 
-  // ─── 60 FPS Native Video & 1 FPS Gemini Feeder ───
+  // ─── Vision Stream Setup ───
   useEffect(() => {
     if (visionMode === 'off' || !visionMode || !isActive) {
       if (streamRef.current) {
@@ -211,7 +308,7 @@ export default function LeftPanels({
           }
         }, 1000)
       } catch (err) {
-        console.error('Hardware access denied or failed:', err)
+        console.error('Vision access denied:', err)
       }
     }
 
@@ -225,7 +322,7 @@ export default function LeftPanels({
     }
   }, [visionMode, isActive])
 
-  // ─── Backend Polling (System Stats) ───
+  // ─── System Stats Polling ───
   useEffect(() => {
     if (!isActive) {
       setBootPhase(true)
@@ -239,7 +336,7 @@ export default function LeftPanels({
         '› MOUNT_VFS ............. OK',
         '› HW_TELEM_LINK ..... SYNC',
         '› OPTICS_DRIVER ... READY',
-        '› SYSTEM_READY'
+        '› SYSTEM_READY ........ ✓'
       ]
       let i = 0
       const bootInterval = setInterval(() => {
@@ -250,7 +347,7 @@ export default function LeftPanels({
           clearInterval(bootInterval)
           setTimeout(() => setBootPhase(false), 900)
         }
-      }, 150)
+      }, 120)
       return () => clearInterval(bootInterval)
     }
 
@@ -275,225 +372,368 @@ export default function LeftPanels({
   const ramColors = getHealthColor(ramValue, 'ram')
   const tempColors = getHealthColor(tempValue, 'temp')
 
+  // ─── Status determination ───
+  const getCPUStatus = () => {
+    if (!isActive) return 'idle'
+    if (cpuValue > 80) return 'critical'
+    if (cpuValue > 60) return 'warning'
+    return 'good'
+  }
+
+  const getRAMStatus = () => {
+    if (!isActive) return 'idle'
+    if (ramValue > 85) return 'critical'
+    if (ramValue > 70) return 'warning'
+    return 'good'
+  }
+
+  const getTempStatus = () => {
+    if (!isActive) return 'idle'
+    if (tempValue > 85) return 'critical'
+    if (tempValue > 70) return 'warning'
+    return 'good'
+  }
+
   return (
-    <div className="flex h-full flex-col gap-3">
-      {/* ── 1. OPTICS FEED ── */}
-      <GlassPanel className="p-4" accent="none">
-        <div className="mb-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <StatusDot active={isActive && visionMode !== 'off'} />
-            <span className="font-mono text-[9px] tracking-[0.2em] text-slate-400 uppercase">
-              Optics Feed
-            </span>
-          </div>
-          <span
-            className={`rounded-md border px-2 py-0.5 font-mono text-[8px] tracking-widest uppercase transition-all duration-500 ${
-              visionMode && visionMode !== 'off'
-                ? 'border-[#00ff88]/25 bg-[#00ff88]/10 text-[#00ff88]'
-                : 'border-white/10 bg-white/5 text-slate-600'
-            }`}
-          >
-            {visionMode && visionMode !== 'off' ? 'Tracking' : isActive ? 'Standby' : 'Offline'}
-          </span>
-        </div>
+    <div className="flex h-full flex-col gap-4 p-0">
+      <style>{`
+        @keyframes shimmer {
+          0% { background-position: -200% 0; }
+          100% { background-position: 200% 0; }
+        }
+        @keyframes scanline {
+          0%, 100% { top: 0%; }
+          50% { top: 100%; }
+        }
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-4px); }
+        }
+      `}</style>
 
-        <div className="relative flex aspect-video w-full items-center justify-center overflow-hidden rounded-xl border border-white/5 bg-black/40">
-          {/* THE FIX: Absolute inset-0 guarantees it fills the box and ignores Flexbox squishing */}
-          <video
-            ref={videoRef}
-            autoPlay
-            playsInline
-            muted
-            className={`absolute inset-0 z-10 w-full h-full object-cover transition-opacity duration-500 ${
-              visionMode && visionMode !== 'off' ? 'opacity-80' : 'opacity-0 pointer-events-none'
-            }`}
-          />
-
-          <canvas ref={canvasRef} width="640" height="480" className="hidden" />
-
-          {/* THE FIX: Absolute overlay so it doesn't push the video out of the way */}
-          <div
-            className={`absolute inset-0 z-20 flex flex-col items-center justify-center gap-2 text-slate-600 transition-opacity duration-500 ${!visionMode || visionMode === 'off' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
-          >
+      {/* ─── VISION FEED PANEL ─── */}
+      <PremiumGlassPanel accent="green" glow>
+        <div className="p-4 flex flex-col h-full gap-3">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <PulseIndicator active={isActive && visionMode !== 'off'} />
+              <div className="flex flex-col">
+                <span className="font-mono text-[8px] tracking-[0.25em] text-white/60 uppercase font-light">
+                  Vision Feed
+                </span>
+                <span className="font-mono text-[9px] tracking-tight text-white/40">
+                  Optics @ 60Hz
+                </span>
+              </div>
+            </div>
             <div
-              className={`rounded-xl border p-2 transition-all duration-500 ${
+              className="px-2.5 py-1 rounded-lg border backdrop-blur-sm text-[8px] font-mono tracking-widest uppercase font-semibold transition-all duration-500"
+              style={
+                visionMode && visionMode !== 'off'
+                  ? {
+                      borderColor: 'rgba(0, 255, 136, 0.3)',
+                      background: 'rgba(0, 255, 136, 0.08)',
+                      color: '#00ff88',
+                      boxShadow: '0 0 12px rgba(0, 255, 136, 0.15)'
+                    }
+                  : {
+                      borderColor: 'rgba(255, 255, 255, 0.1)',
+                      background: 'rgba(255, 255, 255, 0.03)',
+                      color: 'rgba(255, 255, 255, 0.5)'
+                    }
+              }
+            >
+              {visionMode && visionMode !== 'off' ? 'Tracking' : isActive ? 'Ready' : 'Offline'}
+            </div>
+          </div>
+
+          {/* Video Feed */}
+          <div className="relative flex aspect-video w-full items-center justify-center overflow-hidden rounded-xl border border-white/8 bg-gradient-to-br from-black/60 to-black/40 flex-1">
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              muted
+              className={`absolute inset-0 z-10 w-full h-full object-cover transition-opacity duration-500 ${
+                visionMode && visionMode !== 'off' ? 'opacity-85' : 'opacity-0'
+              }`}
+            />
+
+            <canvas ref={canvasRef} width="640" height="480" className="hidden" />
+
+            {/* Fallback state */}
+            <div
+              className={`absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 transition-opacity duration-500 ${
+                !visionMode || visionMode === 'off'
+                  ? 'opacity-100'
+                  : 'opacity-0 pointer-events-none'
+              }`}
+            >
+              <div
+                className="rounded-xl border p-3 transition-all duration-500"
+                style={
+                  isActive
+                    ? {
+                        borderColor: 'rgba(0, 255, 136, 0.2)',
+                        background: 'rgba(0, 255, 136, 0.08)'
+                      }
+                    : {
+                        borderColor: 'rgba(255, 255, 255, 0.1)',
+                        background: 'rgba(0, 0, 0, 0.2)'
+                      }
+                }
+              >
+                <Camera
+                  size={24}
+                  style={{ color: isActive ? '#00ff88' : 'rgba(255, 255, 255, 0.3)' }}
+                  strokeWidth={1.5}
+                />
+              </div>
+              <span className="font-mono text-[8px] tracking-[0.3em] text-white/40 uppercase">
+                No Input
+              </span>
+            </div>
+
+            {/* Corner brackets */}
+            {visionMode && visionMode !== 'off' && (
+              <>
+                {[
+                  'top-3 left-3 border-t border-l',
+                  'top-3 right-3 border-t border-r',
+                  'bottom-3 left-3 border-b border-l',
+                  'bottom-3 right-3 border-b border-r'
+                ].map((pos, i) => (
+                  <div
+                    key={i}
+                    className={`absolute h-4 w-4 z-30 ${pos} rounded-sm transition-colors duration-500`}
+                    style={{ borderColor: 'rgba(0, 255, 136, 0.6)' }}
+                  />
+                ))}
+              </>
+            )}
+
+            {/* Scanline overlay */}
+            {isActive && (
+              <div
+                className="pointer-events-none absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#00ff88]/30 to-transparent z-30"
+                style={{ animation: 'scanline 3s ease-in-out infinite' }}
+              />
+            )}
+          </div>
+        </div>
+      </PremiumGlassPanel>
+
+      {/* ─── NETWORK TELEMETRY PANEL ─── */}
+      <PremiumGlassPanel accent="cyan" glow>
+        <div className="p-4 flex flex-col gap-4">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <IconBadge icon={<Radio size={16} />} color="#22d3ee" active={isActive} />
+              <div className="flex flex-col">
+                <span className="font-mono text-[8px] tracking-[0.25em] text-white/60 uppercase font-light">
+                  Network
+                </span>
+                <span className="font-mono text-[9px] tracking-tight text-white/40">
+                  Telemetry Link
+                </span>
+              </div>
+            </div>
+            <div
+              className="px-2.5 py-1 rounded-lg border backdrop-blur-sm text-[8px] font-mono tracking-widest uppercase font-semibold transition-all duration-500"
+              style={
                 isActive
-                  ? 'border-[#00ff88]/20 bg-[#00ff88]/10 text-[#00ff88]/50'
-                  : 'border-white/5 bg-white/5'
-              }`}
+                  ? {
+                      borderColor: 'rgba(34, 211, 238, 0.3)',
+                      background: 'rgba(34, 211, 238, 0.08)',
+                      color: '#22d3ee',
+                      boxShadow: '0 0 12px rgba(34, 211, 238, 0.15)'
+                    }
+                  : {
+                      borderColor: 'rgba(255, 255, 255, 0.1)',
+                      background: 'rgba(255, 255, 255, 0.03)',
+                      color: 'rgba(255, 255, 255, 0.5)'
+                    }
+              }
             >
-              <Camera size={20} strokeWidth={1.5} />
+              {isActive ? 'Connected' : 'Offline'}
             </div>
-            <span className="font-mono text-[8px] tracking-[0.3em] uppercase">No Signal</span>
           </div>
 
-          {[
-            'top-2 left-2 border-t border-l',
-            'top-2 right-2 border-t border-r',
-            'bottom-2 left-2 border-b border-l',
-            'bottom-2 right-2 border-b border-r'
-          ].map((pos, i) => (
-            <div
-              key={i}
-              className={`absolute h-3.5 w-3.5 z-30 ${pos} rounded-sm transition-colors duration-500 ${
-                visionMode && visionMode !== 'off' ? 'border-[#00ff88]/50' : 'border-white/10'
-              }`}
-            />
-          ))}
-          {isActive && (
-            <div
-              className="pointer-events-none absolute left-0 right-0 h-px bg-linear-to-r from-transparent via-[#00ff88]/40 to-transparent z-30"
-              style={{ animation: 'scanline 3s ease-in-out infinite' }}
-            />
-          )}
-        </div>
-      </GlassPanel>
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 gap-3">
+            <PremiumGlassPanel accent="none" className="p-3">
+              <span className="font-mono text-[7px] tracking-[0.2em] text-white/50 uppercase mb-2 block">
+                Latency
+              </span>
+              <MetricValue
+                value={isActive ? stats.network?.latency : '—'}
+                unit="ms"
+                status={isActive ? 'good' : 'idle'}
+              />
+            </PremiumGlassPanel>
 
-      {/* ── 2. NETWORK TELEMETRY ── */}
-      <GlassPanel className="p-4" accent="none">
-        <div className="mb-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <IconRing color={isActive ? '#00ff88' : '#444'}>
-              <Network size={16} style={{ color: isActive ? '#00ff88' : '#555' }} strokeWidth={2} />
-            </IconRing>
-            <span className="font-mono text-[9px] tracking-[0.18em] text-slate-400 uppercase">
-              Network Telemetry
-            </span>
+            <PremiumGlassPanel accent="none" className="p-3">
+              <span className="font-mono text-[7px] tracking-[0.2em] text-white/50 uppercase mb-2 block">
+                Uptime
+              </span>
+              <MetricValue
+                value={isActive ? stats.os?.uptime : '—'}
+                status={isActive ? 'good' : 'idle'}
+              />
+            </PremiumGlassPanel>
           </div>
-          <span
-            className={`rounded-md border px-2 py-0.5 font-mono text-[8px] tracking-widest uppercase transition-all duration-500 ${
-              isActive
-                ? 'border-[#00ff88]/25 bg-[#00ff88]/10 text-[#00ff88] shadow-[0_0_12px_rgba(0,255,136,0.15)]'
-                : 'border-white/10 bg-white/5 text-slate-600'
-            }`}
-          >
-            {isActive ? 'Secure Uplink' : 'Offline'}
-          </span>
+
+          {/* Traffic bars */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center h-8 w-8 rounded-lg border border-[#ec4899]/20 bg-[#ec4899]/8">
+                <ArrowUp size={14} style={{ color: '#ec4899' }} strokeWidth={2} />
+              </div>
+              <div className="flex-1">
+                <NeonProgressBar
+                  value={isActive ? stats.network?.tx : 0}
+                  color="#ec4899"
+                  glow="#ec4899"
+                  showValue
+                />
+              </div>
+              <span className="font-mono text-[8px] text-[#ec4899]/70 uppercase tracking-wider min-w-[1.5rem]">
+                TX
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center h-8 w-8 rounded-lg border border-[#3b82f6]/20 bg-[#3b82f6]/8">
+                <ArrowDown size={14} style={{ color: '#3b82f6' }} strokeWidth={2} />
+              </div>
+              <div className="flex-1">
+                <NeonProgressBar
+                  value={isActive ? stats.network?.rx : 0}
+                  color="#3b82f6"
+                  glow="#3b82f6"
+                  showValue
+                />
+              </div>
+              <span className="font-mono text-[8px] text-[#3b82f6]/70 uppercase tracking-wider min-w-[1.5rem]">
+                RX
+              </span>
+            </div>
+          </div>
         </div>
-        <div className="mb-4 grid grid-cols-2 gap-3">
-          <div className="rounded-xl border border-white/5 bg-black/20 p-3">
-            <div className="mb-1.5 font-mono text-[8px] tracking-[0.18em] text-slate-500 uppercase">
-              WSS Latency
-            </div>
-            <div className="font-mono text-lg font-semibold leading-none tracking-wider text-[#00ff88]">
-              {isActive ? stats.network?.latency : '—'}
-              <span className="ml-0.5 text-[10px] font-normal text-white/30">ms</span>
-            </div>
-          </div>
-          <div className="rounded-xl border border-white/5 bg-black/20 p-3">
-            <div className="mb-1.5 font-mono text-[8px] tracking-[0.18em] text-slate-500 uppercase">
-              Uptime
-            </div>
-            <div className="font-mono text-lg font-semibold leading-none tracking-wider text-white">
-              {isActive ? stats.os?.uptime : '—'}
+      </PremiumGlassPanel>
+
+      {/* ─── SYSTEM METRICS GRID ─── */}
+      <div className="grid grid-cols-2 gap-3 flex-1 min-h-0">
+        {/* CPU Card */}
+        <PremiumGlassPanel accent="green" className="p-4 flex flex-col justify-between" glow>
+          <div>
+            <IconBadge icon={<Cpu size={14} />} color="#00ff88" active={isActive} />
+            <div className="mt-3 space-y-1">
+              <span className="block font-mono text-[7px] tracking-[0.2em] text-white/50 uppercase">
+                CPU Load
+              </span>
+              <MetricValue value={isActive ? stats.cpu : '—'} unit="%" status={getCPUStatus()} />
             </div>
           </div>
-        </div>
-        <div className="space-y-2.5">
-          <div className="flex items-center gap-2.5">
-            <div
-              className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md"
-              style={{ color: '#ec4899', background: '#ec489911', border: '1px solid #ec489922' }}
-            >
-              <ArrowUp size={12} strokeWidth={2} />
-            </div>
-            <div className="min-w-0 flex-1">
-              <NeonBar
-                value={isActive ? stats.network?.tx : 0}
-                color="linear-linear(90deg, #550022, #ec4899)"
-                glow="#ec4899"
+          <div className="mt-4">
+            <NeonProgressBar
+              value={isActive ? cpuValue : 0}
+              color={cpuColors.linear}
+              glow={cpuColors.glow}
+            />
+          </div>
+        </PremiumGlassPanel>
+
+        {/* RAM Card */}
+        <PremiumGlassPanel accent="orange" className="p-4 flex flex-col justify-between" glow>
+          <div>
+            <IconBadge icon={<MemoryStick size={14} />} color="#f97316" active={isActive} />
+            <div className="mt-3 space-y-1">
+              <span className="block font-mono text-[7px] tracking-[0.2em] text-white/50 uppercase">
+                RAM Usage
+              </span>
+              <MetricValue
+                value={isActive ? stats.memory.usedPercentage : '—'}
+                unit="%"
+                status={getRAMStatus()}
               />
             </div>
-            <span className="w-6 shrink-0 font-mono text-right text-[9px] text-[#ec4899]">TX</span>
           </div>
-          <div className="flex items-center gap-2.5">
-            <div
-              className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md"
-              style={{ color: '#3b82f6', background: '#3b82f611', border: '1px solid #3b82f622' }}
-            >
-              <ArrowDown size={12} strokeWidth={2} />
-            </div>
-            <div className="min-w-0 flex-1">
-              <NeonBar
-                value={isActive ? stats.network?.rx : 0}
-                color="linear-linear(90deg, #002255, #3b82f6)"
-                glow="#3b82f6"
+          <div className="mt-4">
+            <NeonProgressBar
+              value={isActive ? ramValue : 0}
+              color={ramColors.linear}
+              glow={ramColors.glow}
+            />
+          </div>
+        </PremiumGlassPanel>
+
+        {/* Temperature Card */}
+        <PremiumGlassPanel accent="blue" className="p-4 flex flex-col justify-between" glow>
+          <div>
+            <IconBadge icon={<Thermometer size={14} />} color="#3b82f6" active={isActive} />
+            <div className="mt-3 space-y-1">
+              <span className="block font-mono text-[7px] tracking-[0.2em] text-white/50 uppercase">
+                Temperature
+              </span>
+              <MetricValue
+                value={isActive ? tempValue.toFixed(1) : '—'}
+                unit="°C"
+                status={getTempStatus()}
               />
             </div>
-            <span className="w-6 shrink-0 font-mono text-right text-[9px] text-[#3b82f6]">RX</span>
           </div>
-        </div>
-      </GlassPanel>
+          <div className="mt-4">
+            <NeonProgressBar
+              value={isActive ? tempValue : 0}
+              color={tempColors.linear}
+              glow={tempColors.glow}
+            />
+          </div>
+        </PremiumGlassPanel>
 
-      {/* ── 3. METRIC CARDS GRID ── */}
-      <div className="grid flex-1 grid-cols-2 gap-3 min-h-0">
-        <MetricCard
-          icon={<Cpu size={14} className="text-[#00ff88]" />}
-          watermarkIcon={<Cpu size={90} className="-rotate-6" />}
-          label="CPU Load"
-          value={isActive ? stats.cpu : '—'}
-          unit="%"
-          barValue={isActive ? cpuValue : 0}
-          barColor={cpuColors.linear}
-          barGlow={cpuColors.glow}
-          accentColor={cpuColors.glow}
-        />
+        {/* System Info Card */}
+        <PremiumGlassPanel accent="purple" className="p-4 flex flex-col justify-between" glow>
+          <div>
+            <IconBadge icon={<Monitor size={14} />} color="#a855f7" active={isActive} />
+            <div className="mt-3 space-y-1">
+              <span className="block font-mono text-[7px] tracking-[0.2em] text-white/50 uppercase">
+                System Status
+              </span>
+            </div>
+          </div>
 
-        <MetricCard
-          icon={<MemoryStick size={14} className="text-orange-500" />}
-          watermarkIcon={<MemoryStick size={90} className="rotate-6" />}
-          label="RAM Usage"
-          value={isActive ? stats.memory.usedPercentage : '—'}
-          unit="%"
-          barValue={isActive ? ramValue : 0}
-          barColor={ramColors.linear}
-          barGlow={ramColors.glow}
-          accentColor={ramColors.glow}
-        />
-
-        <MetricCard
-          icon={<Thermometer size={14} className="text-yellow-400" />}
-          watermarkIcon={<Thermometer size={90} className="rotate-12" />}
-          label="Temp"
-          value={isActive ? tempValue.toFixed(0) : '—'}
-          unit="°C"
-          barValue={isActive ? tempValue : 0}
-          barColor={tempColors.linear}
-          barGlow={tempColors.glow}
-          accentColor={tempColors.glow}
-        />
-
-        <MetricCard
-          icon={<Monitor size={14} className="text-purple-400" />}
-          watermarkIcon={<Monitor size={90} className="-rotate-12" />}
-          label="System"
-          accentColor="#a855f7"
-        >
-          <div className="mt-1 flex flex-col justify-end h-full">
+          <div className="flex-1 flex flex-col justify-end">
             {bootPhase && isActive ? (
-              <div className="flex flex-col gap-px overflow-hidden text-right">
+              <div className="space-y-1">
                 {bootLogs.map((log, i) => (
                   <span
                     key={i}
-                    className="font-mono text-[7px] leading-relaxed tracking-wide text-[#00ff88]/70"
-                    style={{ animationDelay: `${i * 0.05}s` }}
+                    className="block font-mono text-[7px] leading-relaxed tracking-wide text-[#a855f7]/60"
                   >
                     {log}
                   </span>
                 ))}
               </div>
             ) : (
-              <div className="text-right font-mono text-xl font-semibold tracking-widest text-white drop-shadow-md">
-                {isActive ? stats.os?.type : <span className="text-slate-600">—</span>}
+              <div className="text-center">
+                <div className="font-mono text-lg font-bold tracking-tight text-white">
+                  {isActive ? stats.os?.type : '—'}
+                </div>
                 {isActive && (
-                  <div className="mt-1 text-right font-mono text-[8px] tracking-[0.3em] text-purple-400/50 uppercase">
-                    Active
+                  <div className="mt-2 inline-flex items-center gap-1.5 px-2 py-1 rounded-lg bg-[#a855f7]/10 border border-[#a855f7]/20">
+                    <PulseIndicator active={true} color="#a855f7" />
+                    <span className="font-mono text-[7px] text-[#a855f7] uppercase tracking-widest">
+                      Active
+                    </span>
                   </div>
                 )}
               </div>
             )}
           </div>
-        </MetricCard>
+        </PremiumGlassPanel>
       </div>
     </div>
   )
