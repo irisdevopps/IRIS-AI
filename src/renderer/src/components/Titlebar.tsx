@@ -4,7 +4,8 @@ import {
   RiCloseLine,
   RiCheckboxBlankLine,
   RiCheckboxMultipleBlankLine,
-  RiFingerprintLine
+  RiCpuLine,
+  RiPulseLine
 } from 'react-icons/ri'
 
 export default function TitleBar() {
@@ -27,14 +28,17 @@ export default function TitleBar() {
   const close = () => window.electron.ipcRenderer.send('window-close')
 
   return (
-    <div className="w-full h-10 flex items-center justify-between bg-[#050505] border-b border-white/[0.04] drag-region select-none z-50">
-      {/* ── LEFT: Branding / Mac Controls ── */}
-      <div className="flex items-center h-full min-w-[140px] pl-4 no-drag">
+    <div className="w-full h-12 flex items-center justify-between bg-[#08080a] backdrop-blur-3xl border-b border-white/[0.06] drag-region select-none z-50 relative">
+      {/* ── Sub-Pixel Top Edge Highlight for Glass Effect ── */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
+
+      {/* ── LEFT: Brand & Platform Controls ── */}
+      <div className="flex items-center h-full min-w-[150px] pl-4 no-drag">
         {isMac ? (
           <div className="flex items-center gap-2 group/mac">
             <button
               onClick={close}
-              className="w-3 h-3 rounded-full bg-zinc-800 hover:bg-[#ff5f56] border border-white/5 transition-colors flex items-center justify-center"
+              className="w-3 h-3 rounded-full bg-zinc-800 hover:bg-[#ff5f56] border border-black/20 transition-colors flex items-center justify-center shadow-inner"
             >
               <RiCloseLine
                 size={8}
@@ -43,7 +47,7 @@ export default function TitleBar() {
             </button>
             <button
               onClick={minimize}
-              className="w-3 h-3 rounded-full bg-zinc-800 hover:bg-[#ffbd2e] border border-white/5 transition-colors flex items-center justify-center"
+              className="w-3 h-3 rounded-full bg-zinc-800 hover:bg-[#ffbd2e] border border-black/20 transition-colors flex items-center justify-center shadow-inner"
             >
               <RiSubtractLine
                 size={8}
@@ -52,7 +56,7 @@ export default function TitleBar() {
             </button>
             <button
               onClick={toggleMaximize}
-              className="w-3 h-3 rounded-full bg-zinc-800 hover:bg-[#27c93f] border border-white/5 transition-colors flex items-center justify-center"
+              className="w-3 h-3 rounded-full bg-zinc-800 hover:bg-[#27c93f] border border-black/20 transition-colors flex items-center justify-center shadow-inner"
             >
               <RiCheckboxBlankLine
                 size={6}
@@ -61,56 +65,66 @@ export default function TitleBar() {
             </button>
           </div>
         ) : (
-          <div className="flex items-center gap-2.5 opacity-80">
-            <div className="flex items-center justify-center w-4 h-4 rounded bg-emerald-500/10 border border-emerald-500/20">
-              <RiFingerprintLine size={10} className="text-emerald-500" />
+          <div className="flex items-center gap-3">
+            <div className="relative flex items-center justify-center w-6 h-6 rounded-md bg-emerald-500/10 border border-emerald-500/20 shadow-[0_0_10px_rgba(16,185,129,0.1)]">
+              <RiCpuLine size={14} className="text-emerald-400" />
             </div>
-            <span className="text-[10px] font-bold font-mono tracking-[0.2em] text-zinc-300 uppercase">
-              IRIS_OS
+            <span className="text-[11px] font-bold font-mono tracking-widest text-zinc-100 uppercase">
+              IRIS<span className="text-zinc-600">_OS</span>
             </span>
           </div>
         )}
       </div>
 
-      {/* ── CENTER: Minimalist Status ── */}
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-3 pointer-events-none opacity-80">
-        <span className="text-[9px] font-mono tracking-[0.25em] text-zinc-500 uppercase">
-          System Core
+      {/* ── CENTER: The HUD Status Pill ── */}
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-3 bg-black/60 backdrop-blur-md border border-white/10 rounded-full px-4 py-1.5 shadow-[0_4px_20px_rgba(0,0,0,0.4)] pointer-events-none">
+        {/* Pulsing Core */}
+        <div className="relative flex items-center justify-center w-2 h-2">
+          <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-40 animate-ping" />
+          <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400 shadow-[0_0_8px_#34d399]" />
+        </div>
+
+        {/* Status Text */}
+        <span className="text-[9px] font-mono tracking-[0.2em] text-zinc-300 uppercase">
+          Neural Core
         </span>
-        <span className="text-[9px] font-mono text-zinc-700">/</span>
-        <div className="flex items-center gap-2">
-          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" />
-          <span className="text-[9px] font-mono tracking-[0.25em] text-zinc-300 uppercase">
-            Online
+
+        <span className="text-[10px] text-zinc-700">|</span>
+
+        {/* Animated Waveform Icon */}
+        <div className="flex items-center gap-1.5 text-emerald-400">
+          <RiPulseLine size={12} className="animate-pulse" />
+          <span className="text-[9px] font-mono tracking-widest font-bold uppercase drop-shadow-[0_0_5px_rgba(16,185,129,0.5)]">
+            Active
           </span>
         </div>
       </div>
 
       {/* ── RIGHT: Windows Controls / Mac Spacer ── */}
-      <div className="flex h-full min-w-[140px] justify-end no-drag">
+      <div className="flex h-full min-w-[150px] justify-end no-drag">
         {!isMac ? (
           <div className="flex h-full items-center">
             <button
               onClick={minimize}
-              className="w-12 h-full flex items-center justify-center text-zinc-500 hover:text-zinc-200 hover:bg-white/5 transition-colors"
+              className="w-12 h-full flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
             >
-              <RiSubtractLine size={14} />
+              <RiSubtractLine size={16} />
             </button>
             <button
               onClick={toggleMaximize}
-              className="w-12 h-full flex items-center justify-center text-zinc-500 hover:text-zinc-200 hover:bg-white/5 transition-colors"
+              className="w-12 h-full flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
             >
               {isMaximized ? (
-                <RiCheckboxMultipleBlankLine size={12} />
+                <RiCheckboxMultipleBlankLine size={14} />
               ) : (
-                <RiCheckboxBlankLine size={12} />
+                <RiCheckboxBlankLine size={14} />
               )}
             </button>
             <button
               onClick={close}
-              className="w-12 h-full flex items-center justify-center text-zinc-500 hover:text-white hover:bg-red-500 transition-colors"
+              className="w-12 h-full flex items-center justify-center text-zinc-400 hover:text-white hover:bg-red-500/90 hover:shadow-[inset_0_0_15px_rgba(255,255,255,0.2)] transition-all"
             >
-              <RiCloseLine size={16} />
+              <RiCloseLine size={18} />
             </button>
           </div>
         ) : (
