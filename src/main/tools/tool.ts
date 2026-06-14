@@ -1004,7 +1004,7 @@ const toolHandlers: Record<string, (args: any) => Promise<any>> = {
 
   // 👻 GHOST AUTOMATION & UI INTERACTION
   ghost_type: (args) => executeGhostSequence([{ type: 'type', text: args.text }]),
-  execute_sequence: (args) => {
+  execute_sequence: (args): any => {
     try {
       return executeGhostSequence(JSON.parse(args.json_actions))
     } catch (e) {
