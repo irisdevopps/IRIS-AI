@@ -40,36 +40,6 @@ const glassPanel = 'bg-zinc-950/40 backdrop-blur-xl border border-white/5 rounde
 
 const IRIS = (props: IrisProps) => {
   const [activeTab, setActiveTab] = useState('DASHBOARD')
-  const [stats, setStats] = useState<any>(null)
-  const [time, setTime] = useState<Date>(new Date())
-  const [chatHistory, setChatHistory] = useState<any[]>([])
-  const [showSourceModal, setShowSourceModal] = useState(false)
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTime(new Date())
-      getSystemStatus().then(setStats)
-    }, 500)
-    return () => clearInterval(timer)
-  }, [])
-
-  useEffect(() => {
-    const fetchHistory = async () => {
-      const history = await getHistory()
-      if (Array.isArray(history)) setChatHistory(history.slice(-15))
-    }
-    fetchHistory()
-    const interval = setInterval(fetchHistory, 500)
-    return () => clearInterval(interval)
-  }, [])
-
-  const handleVisionClick = () => {
-    if (props.isVideoOn) {
-      props.stopVision()
-    } else {
-      setShowSourceModal(true)
-    }
-  }
 
   return (
     <div className="h-screen w-full bg-black text-zinc-100 font-sans overflow-hidden select-none flex flex-col relative pb-5">
@@ -107,18 +77,6 @@ const IRIS = (props: IrisProps) => {
             </button>
           ))}
         </div>
-
-        <div className="flex items-center gap-6 text-[11px] font-mono font-bold opacity-60">
-          <div className="flex items-center gap-2 text-emerald-500">
-            <RiWifiLine /> <span>Network</span>
-          </div>
-          <div className="hidden sm:flex items-center gap-2">
-            <RiBatteryChargeLine /> <span>100%</span>
-          </div>
-          <div className="bg-zinc-800 px-2 py-1 rounded text-zinc-300">
-            {time.toLocaleTimeString()}
-          </div>
-        </div>
       </div>
 
       <div className="flex-1 overflow-hidden relative bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-zinc-900/50 via-black to-black">
@@ -143,62 +101,6 @@ const IRIS = (props: IrisProps) => {
           {activeTab === 'GALLERY' && <GalleryView />}
         </Suspense>
       </div>
-
-      {showSourceModal && (
-        <div className="absolute inset-0 z-100 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className={`${glassPanel} w-96 p-1 border-emerald-500/30 flex flex-col shadow-2xl`}>
-            <div className="flex items-center justify-between p-4 border-b border-white/5 bg-white/5">
-              <span className="text-xs font-bold tracking-widest text-emerald-400">
-                IRIS VISION - SELECT INPUT SOURCE
-              </span>
-              <button
-                onClick={() => setShowSourceModal(false)}
-                className="cursor-pointer text-zinc-500 hover:text-white"
-              >
-                <RiCloseLine size={18} />
-              </button>
-            </div>
-
-            <div className="p-4 grid grid-cols-2 gap-4">
-              <button
-                onClick={() => {
-                  props.startVision('camera')
-                  setShowSourceModal(false)
-                }}
-                className="cursor-pointer group flex flex-col items-center justify-center gap-3 p-6 rounded-xl bg-black/40 border border-white/10 hover:border-emerald-500/50 hover:bg-emerald-500/10 transition-all"
-              >
-                <div className="p-3 rounded-full bg-zinc-900 group-hover:bg-emerald-500 text-zinc-400 group-hover:text-black transition-colors">
-                  <RiCameraLine size={28} />
-                </div>
-                <span className="text-[10px] font-bold tracking-widest text-zinc-300 group-hover:text-emerald-400">
-                  CAMERA FEED
-                </span>
-              </button>
-
-              <button
-                onClick={() => {
-                  props.startVision('screen')
-                  setShowSourceModal(false)
-                }}
-                className="cursor-pointer group flex flex-col items-center justify-center gap-3 p-6 rounded-xl bg-black/40 border border-white/10 hover:border-emerald-500/50 hover:bg-emerald-500/10 transition-all"
-              >
-                <div className="p-3 rounded-full bg-zinc-900 group-hover:bg-emerald-500 text-zinc-400 group-hover:text-black transition-colors">
-                  <RiComputerLine size={28} />
-                </div>
-                <span className="text-[10px] font-bold tracking-widest text-zinc-300 group-hover:text-emerald-400">
-                  SCREEN SHARE
-                </span>
-              </button>
-            </div>
-
-            <div className="p-3 bg-black/20 text-center">
-              <p className="text-[9px] text-zinc-600 font-mono">
-                SELECT INPUT SOURCE FOR NEURAL PROCESSING
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
