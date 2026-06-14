@@ -13,6 +13,7 @@ import ViewSkeleton from '@renderer/components/ViewSkelrton'
 import DashboardView from '../views/Dashboard'
 import PhoneView from '../views/Phone'
 import { Status } from '@renderer/types/panel'
+import SettingsView from '@renderer/views/Settings'
 
 const WorkFlowEditorView = lazy(() => import('../views/WorkFlowEditor'))
 const NotesView = lazy(() => import('../views/Notes'))
@@ -132,6 +133,7 @@ const IRIS = ({
             {activeTab === 'Macros' && <WorkFlowEditorView />}
             {activeTab === 'NOTES' && <NotesView glassPanel={glassPanel} />}
             {activeTab === 'GALLERY' && <GalleryView />}
+            {activeTab === 'SETTINGS' && <SettingsView isSystemActive={isConnected} />}
           </Suspense>
         </div>
       </div>
