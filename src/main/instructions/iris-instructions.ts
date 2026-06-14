@@ -72,4 +72,4 @@ ${
     : `This is a fresh session. A brief, sharp greeting is appropriate.`
 }`
 
-export const finalSystemInstruction = IRIS_SYSTEM_INSTRUCTION + contextPrompt
+export const IRIS_INSTRUCTION = IRIS_SYSTEM_INSTRUCTION + contextPrompt
