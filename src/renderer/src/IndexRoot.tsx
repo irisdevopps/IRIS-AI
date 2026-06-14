@@ -51,7 +51,7 @@ const IndexRoot = () => {
       setTimeout(() => {
         setIsConnected(true)
         setSystemStatus('CONNECTING')
-      }, 1500)
+      }, 500)
     }
   }
 
