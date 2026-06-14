@@ -316,15 +316,7 @@ export const systemToolDeclarations: FunctionDeclaration[] = [
     description: 'Take a screenshot.',
     parameters: { type: Type.OBJECT, properties: {}, required: [] }
   },
-  {
-    name: 'google_search',
-    description: 'Search Google.',
-    parameters: {
-      type: Type.OBJECT,
-      properties: { query: { type: Type.STRING } },
-      required: ['query']
-    }
-  },
+
   {
     name: 'click_on_screen',
     description: 'Click on a specific UI element on the screen based on its description.',
