@@ -16,6 +16,7 @@ import ResearchWidget from './Widgets/DeepResearch'
 import SemanticWidget from './Widgets/SematicSearch'
 import SmartDropZonesWidget from './Widgets/SmartZoneWidget'
 import TitleBar from './components/Titlebar'
+import { Status } from './types/panel'
 
 export type VisionMode = 'camera' | 'screen' | 'none'
 
