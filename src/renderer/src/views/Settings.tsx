@@ -282,40 +282,35 @@ export default function SettingsView({ isSystemActive }: SettingsProps) {
                   </div>
 
                   <div className="flex-1 flex flex-col justify-center w-full">
-                    {/* State: IDLE / ERROR / CHECKING */}
-                    {(updateStatus === 'idle' ||
-                      updateStatus === 'error' ||
-                      updateStatus === 'checking') && (
+                    {/* State: IDLE / ERROR */}
+                    {(updateStatus === 'idle' || updateStatus === 'error') && (
                       <div className="flex flex-col items-center text-center gap-4">
                         <div className="h-16 w-16 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center mb-2">
                           <RiCheckLine size={32} />
                         </div>
-                        <h3 className="text-xl font-bold text-white">
-                          {updateStatus === 'error' ? 'Update Error' : "You're up to date"}
-                        </h3>
+                        <h3 className="text-xl font-bold text-white">You're up to date</h3>
                         <p className="text-sm text-zinc-400">
-                          {updateStatus === 'error'
-                            ? 'Failed to check for updates. Try again.'
-                            : 'IRIS is running the latest available version.'}
+                          IRIS is running the latest available version.
                         </p>
 
                         <motion.button
-                          whileHover={updateStatus !== 'checking' ? { scale: 1.02 } : {}}
-                          whileTap={updateStatus !== 'checking' ? { scale: 0.95 } : {}}
-                          onClick={updateStatus !== 'checking' ? checkForUpdates : undefined}
-                          disabled={updateStatus === 'checking'}
-                          className={`mt-6 px-6 py-3 rounded-xl font-semibold text-sm flex items-center gap-2 transition-all duration-300 ${
-                            updateStatus === 'checking'
-                              ? 'bg-white/10 text-white/50 cursor-default'
-                              : 'bg-white text-black cursor-pointer shadow-lg'
-                          }`}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={checkForUpdates}
+                          className="mt-6 px-6 py-3 cursor-pointer rounded-xl bg-white text-black font-semibold text-sm flex items-center gap-2"
                         >
-                          <RiRefreshLine
-                            size={18}
-                            className={updateStatus === 'checking' ? 'animate-spin' : ''}
-                          />
-                          {updateStatus === 'checking' ? 'Checking...' : 'Check for Updates'}
+                          <RiRefreshLine size={18} /> Check for Updates
                         </motion.button>
+                      </div>
+                    )}
+
+                    {/* State: CHECKING */}
+                    {updateStatus === 'checking' && (
+                      <div className="flex flex-col items-center text-center gap-6 py-8">
+                        <RiRefreshLine className="text-white animate-spin" size={40} />
+                        <p className="text-base text-zinc-300 font-medium">
+                          Checking servers for updates...
+                        </p>
                       </div>
                     )}
 
