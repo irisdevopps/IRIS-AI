@@ -757,7 +757,8 @@ export const systemToolDeclarations: FunctionDeclaration[] = [
   {
     name: 'open_in_vscode',
     description:
-      "Opens the currently active file or project in Visual Studio Code. Use this when the user says 'open it in vscode'."
+      "Opens the currently active file or project in Visual Studio Code. Use this when the user says 'open it in vscode'.",
+    parameters: { type: Type.OBJECT, properties: {}, required: [] }
   },
   {
     name: 'teleport_windows',
