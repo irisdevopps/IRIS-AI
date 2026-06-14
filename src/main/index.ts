@@ -21,6 +21,9 @@ import registerPhantomKeyboard from './handlers/PhantomControl-handler'
 import registerSecurityVault from './security/Security'
 import registerLockSystem from './security/lock-system'
 import { autoUpdater } from 'electron-updater'
+import { pushVisionToGemini, StartIRIS, stopIRIS, toggleIRISMic } from './agents/iris-ai'
+import { getMemory } from './hooks/iris-memory'
+import registerSystemHandlers from './lib/system'
 
 app.commandLine.appendSwitch('use-fake-ui-for-media-stream')
 
@@ -269,6 +272,31 @@ app.whenReady().then(() => {
       mainWindow.webContents.send('oauth-callback', url)
     }
   })
+
+  ipcMain.on('iris:start-session', (event) => {
+    console.log('Starting IRIS...')
+    StartIRIS(event)
+  })
+
+  ipcMain.on('iris:stop-session', () => {
+    console.log('Stopping IRIS...')
+    stopIRIS()
+  })
+
+  ipcMain.on('iris:toggle-mic', (_event, isMuted: boolean) => {
+    console.log(`Toggling Mic... Muted state: ${isMuted}`)
+    toggleIRISMic(isMuted)
+  })
+
+  ipcMain.handle('iris:get-history', async () => {
+    return await getMemory()
+  })
+
+  ipcMain.on('iris:send-vision-frame', (_event, base64Data: string) => {
+    pushVisionToGemini(base64Data)
+  })
+
+  registerSystemHandlers(ipcMain)
 
   registerLockSystem()
   registerSecurityVault()
