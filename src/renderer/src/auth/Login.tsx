@@ -122,9 +122,9 @@ export default function LoginPage() {
           <div className="w-full bg-black/60 backdrop-blur-3xl border border-white/10 rounded-3xl p-10 shadow-2xl relative">
             {/* Header / Branding */}
             <div className="flex flex-col items-center text-center mb-10">
-              <img src='/'/>
-              <h1 className="text-3xl font-bold tracking-tight text-white mb-2">IRIS AI</h1>
-              <p className="text-zinc-400 text-sm font-medium">Intelligent Local Workspace</p>
+              <img src="/Logo.png" className="w-24 h-24 object-cover" />
+              <h1 className="text-3xl font-bold tracking-tight text-green-600 mb-2">IRIS AI</h1>
+              <p className="text-zinc-400 text-sm font-medium">Desktop Voice Assistant</p>
             </div>
 
             {/* Information Notice */}
