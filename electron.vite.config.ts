@@ -8,14 +8,15 @@ export default defineConfig({
     build: {
       bytecode: {
         transformArrowFunctions: true,
-        removeBundleJS: true 
-      },
+        removeBundleJS: true
+      }
     }
   },
   preload: {
     build: {
       bytecode: {
-        transformArrowFunctions: true
+        transformArrowFunctions: true,
+        removeBundleJS: true
       }
     }
   },
