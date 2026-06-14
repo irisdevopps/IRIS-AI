@@ -23,6 +23,7 @@ import registerLockSystem from './security/lock-system'
 import { autoUpdater } from 'electron-updater'
 import { pushVisionToGemini, StartIRIS, stopIRIS, toggleIRISMic } from './agents/iris-ai'
 import { getMemory } from './hooks/iris-memory'
+import { getAdbHistory } from './mobile/adb-manager'
 import registerSystemHandlers from './lib/system'
 
 app.commandLine.appendSwitch('use-fake-ui-for-media-stream')
@@ -290,6 +291,10 @@ app.whenReady().then(() => {
 
   ipcMain.handle('iris:get-history', async () => {
     return await getMemory()
+  })
+
+  ipcMain.handle('adb-get-history', async () => {
+    return await getAdbHistory()
   })
 
   ipcMain.on('iris:send-vision-frame', (_event, base64Data: string) => {
