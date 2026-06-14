@@ -1,4 +1,10 @@
 import { Type, FunctionDeclaration } from '@google/genai'
+import { fetchSystemStats, fetchInstalledApps, fetchStorageDrives } from '../logic/system'
+import { executeFSOperation } from '../logic/filesystem'
+import { manageApp } from '../logic/app-control'
+import { executeWebAction } from '../agent/browser-agent'
+import { scanDirectoryTree } from '../logic/fileScanner'
+import { openFileSystemItem } from '../logic/fileOpener'
 
 export const systemToolDeclarations: FunctionDeclaration[] = [
   {
@@ -932,7 +938,20 @@ export const systemToolDeclarations: FunctionDeclaration[] = [
   }
 ]
 
-const toolHandlers: Record<string, (args: any) => Promise<any>> = {}
+const toolHandlers: Record<string, (args: any) => Promise<any>> = {
+  get_system_stats: () => fetchSystemStats(),
+  get_installed_apps: () => fetchInstalledApps(),
+  get_storage_drives: () => fetchStorageDrives(),
+  file_system_operation: (args) =>
+    executeFSOperation(args.action, args.targetPath, args.destPath, args.content),
+  manage_application: (args) => manageApp(args.action, args.appName),
+  smart_web_agent: (args) => executeWebAction(args.query, args.intent),
+  scan_directory: (args) => {
+    const depth = args.maxDepth !== undefined ? Math.min(args.maxDepth, 10) : 1
+    return scanDirectoryTree(args.targetPath, 0, depth)
+  },
+  open_file_natively: (args) => openFileSystemItem(args.targetPath, args.specificApp)
+}
 
 export async function executeSystemTool(fc: any) {
   const functionName = fc.name

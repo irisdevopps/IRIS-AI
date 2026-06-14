@@ -11,15 +11,13 @@ export default function RightPanel() {
   const scrollRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    // 1. Fetch History on Mount
     const loadHistory = async () => {
       if ((window as any).iris?.getHistory) {
         try {
           const pastMemories = await (window as any).iris.getHistory()
-          console.log({pastMemories})
-          // Ensure we only keep the last 30 messages (15 pairs) to prevent DOM lag
+          console.log({ pastMemories })
           const recentMemories: Message[] = pastMemories.slice(-30).map((m: any) => ({
-            role: m.role.toLowerCase() as 'user' | 'model' | 'system', // Ensure 'USER'/'AGENT' maps to 'user'/'model'
+            role: m.role.toLowerCase() as 'user' | 'model' | 'system',
             text: m.text
           }))
           setChatHistory(recentMemories)
@@ -30,13 +28,11 @@ export default function RightPanel() {
     }
     loadHistory()
 
-    // 2. Listen for Real-Time Transcripts
     if ((window as any).iris) {
       ;(window as any).iris.onTranscript(
         (data: { role: string; text: string; isFinal: boolean }) => {
           if (data.role === 'user') {
             const newMessage: Message = { role: 'user', text: data.text }
-            // Keep history trimmed to 30 elements
             setChatHistory((prev) => [...prev, newMessage].slice(-30))
           } else if (data.role === 'model') {
             setActiveModelText((prev) => prev + data.text)

@@ -9,8 +9,8 @@ import {
   ArrowUp,
   ArrowDown
 } from 'lucide-react'
-import { LeftPanelsProps } from '../../types/pannel'
 import { getSystemStatus, SystemStats } from '@renderer/services/system-info'
+import { LeftPanelsProps } from '@renderer/types/panel'
 
 function getHealthColor(value: number, type: 'cpu' | 'ram' | 'temp') {
   let ratio = Math.min(1, Math.max(0, value / 100))
