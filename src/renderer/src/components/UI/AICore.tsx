@@ -6,11 +6,11 @@ import * as THREE from 'three'
 // Color tokens — aligned with IRIS design system
 // ─────────────────────────────────────────────────────
 const C = {
-  idle: new THREE.Color('#00ff88'), // phosphor green
-  active: new THREE.Color('#22d3ee'), // electric cyan
-  dimIdle: new THREE.Color('#005533'), // deep dim green for outer shell
-  ring: new THREE.Color('#00ff88'),
-  ringGlow: new THREE.Color('#0affe0')
+  idle: new THREE.Color('#39ff14'), // pure neon green
+  active: new THREE.Color('#00ffff'), // electric cyan
+  dimIdle: new THREE.Color('#0b3300'), // deep dim green for outer shell
+  ring: new THREE.Color('#39ff14'),
+  ringGlow: new THREE.Color('#ccffb3') // bright neon glow
 }
 
 // ─────────────────────────────────────────────────────
