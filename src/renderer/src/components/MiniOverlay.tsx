@@ -8,8 +8,6 @@ import {
   RiDragMove2Fill
 } from 'react-icons/ri'
 import { GiPowerButton } from 'react-icons/gi'
-import { irisService } from '@renderer/services/Iris-voice-ai'
-import { VisionMode } from '@renderer/IndexRoot'
 import { Status } from '@renderer/types/panel'
 
 interface OverlayProps {
@@ -30,35 +28,6 @@ const MiniOverlay = ({
   handleMicToggle
 }: OverlayProps) => {
   const [isTalking, setIsTalking] = useState(false)
-  const analyzerRef = useRef<AnalyserNode | null>(null)
-  const dataArrayRef = useRef<Uint8Array | any | null>(null)
-
-  useEffect(() => {
-    if (isSystemActive && irisService.analyser) {
-      analyzerRef.current = irisService.analyser
-      dataArrayRef.current = new Uint8Array(irisService.analyser.frequencyBinCount)
-      const checkAudio = () => {
-        if (analyzerRef.current && dataArrayRef.current) {
-          analyzerRef.current.getByteFrequencyData(dataArrayRef.current)
-          const avg = dataArrayRef.current.reduce((a, b) => a + b) / dataArrayRef.current.length
-          setIsTalking(avg > 10)
-        }
-        if (isSystemActive) requestAnimationFrame(checkAudio)
-      }
-      checkAudio()
-    } else {
-      setIsTalking(false)
-    }
-  }, [isSystemActive])
-
-  const handleVisionClick = (mode: 'camera' | 'screen') => {
-    if (isVideoOn && visionMode === mode) {
-      stopVision()
-    } else {
-      startVision(mode)
-    }
-  }
-
   const expand = () => {
     window.electron.ipcRenderer.send('toggle-overlay')
   }
