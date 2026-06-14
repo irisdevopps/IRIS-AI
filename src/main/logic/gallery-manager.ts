@@ -3,7 +3,6 @@ import fs from 'fs'
 import path from 'path'
 import { pathToFileURL } from 'url'
 
-// Internal helper to ensure directory exists safely when functions are invoked
 function ensureGalleryDir(): string {
   const galleryDir = path.resolve(app.getPath('userData'), 'Gallery')
   if (!fs.existsSync(galleryDir)) {
@@ -12,7 +11,6 @@ function ensureGalleryDir(): string {
   return galleryDir
 }
 
-// Exported directly to retrieve items from the gallery
 export async function getGallery() {
   try {
     const galleryDir = ensureGalleryDir()
@@ -41,7 +39,6 @@ export async function getGallery() {
   }
 }
 
-// Exported directly to process and save image strings
 export async function saveImageToGallery({
   title,
   base64Data
@@ -72,7 +69,6 @@ export async function saveImageToGallery({
   }
 }
 
-// Exported directly to delete images
 export async function deleteImage(filename: string): Promise<boolean> {
   try {
     const galleryDir = ensureGalleryDir()
@@ -88,12 +84,10 @@ export async function deleteImage(filename: string): Promise<boolean> {
   }
 }
 
-// Exported directly to reveal files in the OS file explorer
 export async function openImageLocation(filePath: string): Promise<void> {
   shell.showItemInFolder(filePath)
 }
 
-// Exported directly to save copies via OS Save Dialog
 export async function saveImageExternal(sourcePath: string) {
   try {
     const { filePath } = await dialog.showSaveDialog({
