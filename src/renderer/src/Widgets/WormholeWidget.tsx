@@ -6,7 +6,6 @@ export default function WormholeWidget() {
   const [isVisible, setIsVisible] = useState(false)
   const [url, setUrl] = useState('')
 
-  // THE FIX: Purely driven by Backend IPC commands
   useEffect(() => {
     if (!window.electron?.ipcRenderer) return
 
