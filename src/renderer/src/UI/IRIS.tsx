@@ -1,6 +1,5 @@
 import { useState, Suspense, lazy } from 'react'
 import {
-  RiShieldFlashLine,
   RiLayoutGridLine,
   RiBrainLine,
   RiFolderOpenLine,
@@ -51,11 +50,7 @@ const IRIS = ({
 
   return (
     <div className="flex flex-col h-screen w-full bg-black text-zinc-100 font-sans overflow-hidden select-none relative">
-      {/* ------------------------------------------- */}
-      {/* TOP DOCK / NAVIGATION BAR                   */}
-      {/* ------------------------------------------- */}
       <div className="h-16 w-full flex items-center justify-between px-6 bg-black border-b border-white/5 z-50">
-        {/* Left: Branding */}
         <div className="flex items-center gap-3 w-48 cursor-pointer">
           <img src="/Logo.png" className="w-14 h-14" />
 
@@ -71,7 +66,6 @@ const IRIS = ({
           </div>
         </div>
 
-        {/* Center: The Floating Dock */}
         <div className="flex items-center gap-1 bg-zinc-950/80 p-1 rounded-xl border border-white/5 backdrop-blur-md shadow-2xl">
           {tabs.map((tab) => (
             <button
@@ -91,7 +85,6 @@ const IRIS = ({
           ))}
         </div>
 
-        {/* Right: System Status */}
         <div className="flex items-center justify-end gap-3 w-48">
           <div className="flex flex-col items-end leading-none">
             <span className="text-[10px] font-mono tracking-widest uppercase text-zinc-400">
@@ -109,11 +102,7 @@ const IRIS = ({
         </div>
       </div>
 
-      {/* ------------------------------------------- */}
-      {/* MAIN CONTENT AREA                           */}
-      {/* ------------------------------------------- */}
       <div className="flex-1 overflow-hidden relative bg-[radial-gradient(ellipse_at_center,var(--tw-gradient-stops))] from-zinc-950 via-black to-black">
-        {/* Content Wrapper */}
         <div className="relative h-full w-full p-4 overflow-y-auto">
           <div className={`h-full w-full ${activeTab === 'DASHBOARD' ? 'block' : 'hidden'}`}>
             <DashboardView
