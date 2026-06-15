@@ -3,7 +3,6 @@ import os from 'os'
 
 const runPowerShell = (cmd: string): Promise<string> => {
   return new Promise((resolve) => {
-    // Added -NoProfile for faster execution
     exec(`powershell -NoProfile -Command "${cmd.replace(/"/g, '\\"')}"`, (error, stdout) => {
       if (error) {
         return resolve('')
@@ -15,10 +14,7 @@ const runPowerShell = (cmd: string): Promise<string> => {
 
 export async function getLiveLocation() {
   try {
-    // ── TIER 1: High-Accuracy OS Native (Windows Only) ──
     if (os.platform() === 'win32') {
-      // THE FIX: Added [System.Device.Location.GeoPositionAccuracy]::High
-      // This forces Windows to use Wi-Fi Triangulation & GPS hardware instead of cheap subnet guessing.
       const psCommand = `Add-Type -AssemblyName System.Device; $w = New-Object System.Device.Location.GeoCoordinateWatcher([System.Device.Location.GeoPositionAccuracy]::High); $w.Start(); $t = 0; while($w.Position.Location.IsUnknown -and $t -lt 20) { Start-Sleep -Milliseconds 250; $t++ }; if(!$w.Position.Location.IsUnknown) { Write-Output "$($w.Position.Location.Latitude),$($w.Position.Location.Longitude)" }`
 
       const osLocation = await runPowerShell(psCommand)
@@ -44,8 +40,6 @@ export async function getLiveLocation() {
       }
     }
 
-    // ── TIER 2: Premium HTTPS IP Geolocation (ipapi.co) ──
-    // Replaced the HTTP ip-api with a secure, highly accurate HTTPS alternative
     try {
       const ipapiRes = await fetch('https://ipapi.co/json/', {
         headers: { 'User-Agent': 'IRIS-X-Desktop-Application-v1' }
@@ -64,11 +58,8 @@ export async function getLiveLocation() {
         }
       }
     } catch (e) {
-      // Silently catch network blocks and fall through to Tier 3
     }
 
-    // ── TIER 3: Bulletproof Fallback (ipinfo.io) ──
-    // The absolute most reliable IP fallback in the industry.
     const ipinfoRes = await fetch('https://ipinfo.io/json', {
       headers: { 'User-Agent': 'IRIS-X-Desktop-Application-v1' }
     })
