@@ -9,7 +9,8 @@ electronFuses:
   EnableContextIsolation: true
   EnableNodeIntegration: false
 
-compression: store
+asar: true
+compression: maximum
 
 files:
   - '!**/.vscode/*'
