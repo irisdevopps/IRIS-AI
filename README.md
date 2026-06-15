@@ -11,23 +11,19 @@
 <div style="display: flex; justify-center; gap: 10px; margin-bottom: 20px;">
 
   <a href="https://github.com/IRISX-AI/IRIS-AI/stargazers">
-    <img src="https://img.shields.io/github/stars/IRISX-AI/IRIS-AI?style=for-the-badge&color=10b981&logo=github&logoColor=white" alt="GitHub stars">
+    <img src="https://badgen.net/github/stars/IRISX-AI/IRIS-AI?color=10b981&icon=github" alt="GitHub stars">
   </a>
 
   <a href="https://github.com/IRISX-AI/IRIS-AI/network/members">
-    <img src="https://img.shields.io/github/forks/201Harsh/IRIS-AI?style=for-the-badge&color=10b981&logo=git&logoColor=white" alt="GitHub forks">
+    <img src="https://badgen.net/github/forks/201Harsh/IRIS-AI?color=10b981&icon=github" alt="GitHub forks">
   </a>
 
   <a href="https://github.com/IRISX-AI/IRIS-AI/graphs/contributors">
-    <img src="https://img.shields.io/github/contributors/IRISX-AI/IRIS-AI?style=for-the-badge&color=10b981&logo=users&logoColor=white" alt="Contributors">
-  </a>
-
-  <a href="https://github.com/IRISX-AI/IRIS-AI/releases">
-    <img src="https://img.shields.io/github/downloads/IRISX-AI/IRIS-AI/total?style=for-the-badge&color=10b981&logo=download&logoColor=white" alt="Downloads">
+    <img src="https://badgen.net/github/contributors/IRISX-AI/IRIS-AI?color=10b981&icon=github" alt="Contributors">
   </a>
 
   <a href="https://github.com/sponsors/201Harsh">
-    <img src="https://img.shields.io/badge/Sponsor-Support%20IRIS-ff69b4?style=for-the-badge&logo=github&logoColor=white" alt="GitHub Sponsors">
+    <img src="https://badgen.net/badge/Sponsor/Support%20IRIS/ff69b4?icon=github" alt="GitHub Sponsors">
   </a>
 
 </div>
