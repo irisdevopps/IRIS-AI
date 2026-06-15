@@ -258,7 +258,7 @@ IRIS uses **enterprise-grade code protection** to secure proprietary agent logic
 
 ✅ **Agent Core** (`iris-ai.ts`)  
 ✅ **Tool Implementations** (`tools.ts`)  
-✅ **IPC Handlers** (`src/main/ipc/handlers.ts`)  
+✅ **IPC Handlers** (`handlers.ts`)  
 ✅ **System Utilities** (All Main Process code)
 
 ### How It's Protected?
