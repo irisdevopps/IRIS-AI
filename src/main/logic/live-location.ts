@@ -3,10 +3,8 @@ import os from 'os'
 
 const runPowerShell = (cmd: string): Promise<string> => {
   return new Promise((resolve) => {
-    exec(`powershell -NoProfile -Command "${cmd.replace(/"/g, '\\"')}"`, (error, stdout) => {
-      if (error) {
-        return resolve('')
-      }
+    exec(`powershell -NoProfile -Command "${cmd}"`, (error, stdout) => {
+      if (error) return resolve('')
       resolve(stdout ? stdout.trim() : '')
     })
   })
@@ -14,17 +12,23 @@ const runPowerShell = (cmd: string): Promise<string> => {
 
 export async function getLiveLocation() {
   try {
+    // ── TIER 1: Exact Hardware Triangulation (Windows Only) ──
     if (os.platform() === 'win32') {
-      const psCommand = `Add-Type -AssemblyName System.Device; $w = New-Object System.Device.Location.GeoCoordinateWatcher([System.Device.Location.GeoPositionAccuracy]::High); $w.Start(); $t = 0; while($w.Position.Location.IsUnknown -and $t -lt 20) { Start-Sleep -Milliseconds 250; $t++ }; if(!$w.Position.Location.IsUnknown) { Write-Output "$($w.Position.Location.Latitude),$($w.Position.Location.Longitude)" }`
+      // Wakes up the sensor, waits up to 4 seconds for a lock, and explicitly checks for Permission Denied.
+      const psCommand = `Add-Type -AssemblyName System.Device; $w = New-Object System.Device.Location.GeoCoordinateWatcher(1); $w.TryStart($false, [timespan]::FromSeconds(4)) | Out-Null; if ($w.Permission -eq 'Denied') { Write-Output 'DENIED' } elseif ($w.Position.Location.IsUnknown) { Write-Output 'UNKNOWN' } else { Write-Output "$($w.Position.Location.Latitude),$($w.Position.Location.Longitude)" }`
 
       const osLocation = await runPowerShell(psCommand)
 
-      if (osLocation && osLocation.includes(',')) {
+      if (osLocation === 'DENIED') {
+        console.warn(
+          '⚠️ IRIS: Windows Location Services are DISABLED in Windows Privacy Settings. Exact location blocked.'
+        )
+      } else if (osLocation && osLocation.includes(',')) {
+        // SUCCESS: We got exact coordinates from the OS
         const [lat, lon] = osLocation.split(',')
 
         const geoRes = await fetch(
-          `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`,
-          { headers: { 'User-Agent': 'IRIS-X-Desktop-Application-v1' } }
+          `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`
         )
         const geoData = await geoRes.json()
 
@@ -34,53 +38,36 @@ export async function getLiveLocation() {
           country: geoData.countryName,
           lat: parseFloat(lat),
           lon: parseFloat(lon),
+          accuracy: 'Exact (Hardware/Wi-Fi)',
           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
           fullString: `${geoData.city || geoData.locality}, ${geoData.principalSubdivision}, ${geoData.countryName}`
         }
       }
     }
 
-    try {
-      const ipapiRes = await fetch('https://ipapi.co/json/', {
-        headers: { 'User-Agent': 'IRIS-X-Desktop-Application-v1' }
-      })
-      const ipapiData = await ipapiRes.json()
+    // ── TIER 2: Best Available IP Fallback ──
+    // If Windows blocks us, we use ipwho.is (No API key needed, extremely reliable, ignores custom headers)
+    console.log('📡 IRIS: Falling back to IP-based location mapping...')
 
-      if (ipapiData && ipapiData.city) {
-        return {
-          city: ipapiData.city,
-          region: ipapiData.region,
-          country: ipapiData.country_name,
-          lat: ipapiData.latitude,
-          lon: ipapiData.longitude,
-          timezone: ipapiData.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
-          fullString: `${ipapiData.city}, ${ipapiData.region}, ${ipapiData.country_name}`
-        }
-      }
-    } catch (e) {
-    }
+    const ipRes = await fetch('https://ipwho.is/')
+    const ipData = await ipRes.json()
 
-    const ipinfoRes = await fetch('https://ipinfo.io/json', {
-      headers: { 'User-Agent': 'IRIS-X-Desktop-Application-v1' }
-    })
-    const ipinfoData = await ipinfoRes.json()
-
-    if (ipinfoData && ipinfoData.loc) {
-      const [lat, lon] = ipinfoData.loc.split(',')
+    if (ipData && ipData.success) {
       return {
-        city: ipinfoData.city,
-        region: ipinfoData.region,
-        country: ipinfoData.country,
-        lat: parseFloat(lat),
-        lon: parseFloat(lon),
-        timezone: ipinfoData.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
-        fullString: `${ipinfoData.city}, ${ipinfoData.region}, ${ipinfoData.country}`
+        city: ipData.city,
+        region: ipData.region,
+        country: ipData.country,
+        lat: parseFloat(ipData.latitude),
+        lon: parseFloat(ipData.longitude),
+        accuracy: 'Approximate (ISP Data Center)',
+        timezone: ipData.timezone?.id || Intl.DateTimeFormat().resolvedOptions().timeZone,
+        fullString: `${ipData.city}, ${ipData.region}, ${ipData.country}`
       }
     }
 
     return null
   } catch (error: any) {
-    console.error('[LocationManager] System failed to fetch live location:', error)
+    console.error('❌ IRIS Location Manager Error:', error)
     return null
   }
 }
