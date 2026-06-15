@@ -230,8 +230,8 @@ IRIS uses **enterprise-grade code protection** to secure proprietary agent logic
 
 ### What is Protected?
 
-✅ **Agent Core** (`src/main/agents/iris-ai.ts`)  
-✅ **Tool Implementations** (`src/main/tools/tools.ts`)  
+✅ **Agent Core** (`iris-ai.ts`)  
+✅ **Tool Implementations** (`tools.ts`)  
 ✅ **IPC Handlers** (`src/main/ipc/handlers.ts`)  
 ✅ **System Utilities** (All Main Process code)
 
@@ -575,12 +575,12 @@ IRIS/
 
 ### What's Protected?
 
-| Path                         | Protected?  | Access        |
-| ---------------------------- | ----------- | ------------- |
-| `src/main/agents/iris-ai.ts` | ✅ Bytecode | Sponsors only |
-| `src/main/tools/tools.ts`    | ✅ Bytecode | Sponsors only |
-| `src/renderer/`              | ❌ Open     | Public        |
-| IPC handlers                 | ✅ Bytecode | Built-in only |
+| Path            | Protected?  | Access        |
+| --------------- | ----------- | ------------- |
+| `iris-ai.ts`    | ✅ Bytecode | Sponsors only |
+| `tools.ts`      | ✅ Bytecode | Sponsors only |
+| `src/renderer/` | ✅ React    | ✅ Open        | Public |
+| IPC handlers    | ✅ Bytecode | Built-in only |
 
 ---
 
