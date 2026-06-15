@@ -1,9 +1,9 @@
 import fs from 'fs'
 import path from 'path'
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, safeStorage } from 'electron'
 import { exec } from 'child_process'
 import { GoogleGenAI } from '@google/genai'
-
+import fsSync from 'fs'
 
 function getProjectsDir(): string {
   const projectsDir = path.resolve(app.getPath('userData'), 'Projects')
@@ -20,11 +20,9 @@ function emitCodeChunk(chunk: string) {
   }
 }
 
-
 export async function startLiveCoding({
   prompt,
-  filename,
-  geminiKey
+  filename
 }: {
   prompt: string
   filename: string
@@ -35,6 +33,20 @@ export async function startLiveCoding({
     const filePath = path.join(projectsDir, filename)
 
     fs.writeFileSync(filePath, '// Boss, connection established. Waiting for AI stream...\n')
+
+    let geminiKey = ''
+    const secureConfigPath = path.join(app.getPath('userData'), 'iris_secure_vault.json')
+
+    if (fsSync.existsSync(secureConfigPath)) {
+      try {
+        const data = JSON.parse(fsSync.readFileSync(secureConfigPath, 'utf8'))
+        if (safeStorage.isEncryptionAvailable()) {
+          geminiKey = safeStorage.decryptString(Buffer.from(data.gemini, 'base64'))
+        } else {
+          geminiKey = Buffer.from(data.gemini, 'base64').toString('utf8')
+        }
+      } catch (e) {}
+    }
 
     if (!geminiKey || geminiKey.trim() === '') {
       throw new Error('Missing Gemini API Key. Please configure it in the Command Center Vault.')
