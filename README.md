@@ -30,7 +30,7 @@
 
 **Speak your command. IRIS executes it.**
 
-A voice-first neural execution system powered by **Gemini 2.5 Flash** with real-time WebRTC audio, biometric security, and autonomous system control.
+A voice-first neural execution system powered by **Gemini 3.1 Live API** with real-time WebRTC audio, biometric security, and autonomous system control.
 
 ---
 
