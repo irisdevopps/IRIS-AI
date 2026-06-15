@@ -15,10 +15,8 @@ export async function sendWhatsAppMessage({
       await copyFileToClipboard(filePath)
     }
 
-    // Launch WhatsApp directly via your app launcher utility
     await openApp('whatsapp')
 
-    // Native macro instructions
     const navActions = [
       { type: 'wait', ms: 1500 },
       { type: 'click' },
@@ -71,7 +69,6 @@ export async function scheduleWhatsAppMessage({
     return await sendWhatsAppMessage({ name, message, filePath })
   }
 
-  // Handle scheduling safely within the background node event loop
   setTimeout(
     () => {
       executeGhostSequence([{ type: 'type', text: '' }])
