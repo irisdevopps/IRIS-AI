@@ -4,6 +4,7 @@ import { RiMapPin2Fill, RiCloseLine, RiRouteFill, RiTimeLine } from 'react-icons
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
+// Fix default Leaflet icon paths in Vite/React
 import icon from 'leaflet/dist/images/marker-icon.png'
 import iconShadow from 'leaflet/dist/images/marker-shadow.png'
 
@@ -15,6 +16,33 @@ const DefaultIcon = L.icon({
 })
 L.Marker.prototype.options.icon = DefaultIcon
 
+// Custom sleek premium markers that pop on a colorful map
+const PremiumIcon = (color: string) =>
+  L.divIcon({
+    className: 'custom-premium-marker',
+    html: `<div style="
+    width: 28px; 
+    height: 44px; 
+    background-color: ${color}; 
+    border-radius: 8px 8px 0 0; 
+    border: 3px solid white; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5)
+  ">
+    <div style="
+      width: 10px; 
+      height: 10px; 
+      background-color: white; 
+      border-radius: 50%; 
+    "></div>
+  </div>`,
+    iconSize: [28, 44],
+    iconAnchor: [14, 44],
+    popupAnchor: [0, -38]
+  })
+
 export default function LeafletMapWidget() {
   const [mapData, setMapData] = useState<any>(null)
 
@@ -22,6 +50,7 @@ export default function LeafletMapWidget() {
   const mapInstanceRef = useRef<L.Map | null>(null)
   const layersRef = useRef<L.Layer[]>([])
 
+  // ── 1. Listen for AI Backend Commands (NO HARDCODED ROUTES) ──
   useEffect(() => {
     if (!window.electron?.ipcRenderer) return
 
@@ -42,104 +71,132 @@ export default function LeafletMapWidget() {
     }
   }, [])
 
+  // ── 2. Lifecycle Effect (Mounting & Colorful Tiles) ──
   useEffect(() => {
-    if (!mapData || !mapContainerRef.current) return
+    const container = mapContainerRef.current
+    if (!mapData || !container) return
 
-    if (!mapInstanceRef.current) {
-      mapInstanceRef.current = L.map(mapContainerRef.current, {
-        zoomControl: false, // We hide the default ugly zoom buttons
-        attributionControl: false
-      })
-
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(
-        mapInstanceRef.current
-      )
+    if ((container as any)._leaflet_id) {
+      ;(container as any)._leaflet_id = null
     }
 
+    // Set initial anchor to center of India to prevent crash before flying
+    const map = L.map(container, {
+      zoomControl: false,
+      attributionControl: false
+    }).setView([20.5937, 78.9629], 5)
+
+    // THE FIX: High-fidelity, full-color Google Street Map tiles. No more black void.
+    L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+      maxZoom: 20
+    }).addTo(map)
+
+    mapInstanceRef.current = map
+
+    const resizeTimer = setTimeout(() => {
+      map.invalidateSize()
+    }, 400)
+
+    return () => {
+      clearTimeout(resizeTimer)
+      map.remove()
+      mapInstanceRef.current = null
+    }
+  }, [mapData ? true : false])
+
+  // ── 3. Data Update Effect (Drawing Pins & Routes) ──
+  useEffect(() => {
     const map = mapInstanceRef.current
+    if (!map || !mapData) return
 
     layersRef.current.forEach((layer) => map.removeLayer(layer))
     layersRef.current = []
 
-    if (mapData.mode === 'point') {
-      map.flyTo([mapData.lat, mapData.lng], 13, { duration: 1.5 })
+    try {
+      if (mapData.mode === 'point' && mapData.lat && mapData.lng) {
+        map.flyTo([mapData.lat, mapData.lng], 14, { duration: 1.5 })
 
-      const marker = L.marker([mapData.lat, mapData.lng])
-        .bindPopup(`<strong style="font-family: sans-serif;">${mapData.name}</strong>`)
-        .addTo(map)
+        // Deep Blue marker for single locations
+        const marker = L.marker([mapData.lat, mapData.lng], { icon: PremiumIcon('#2563eb') })
+          .bindPopup(
+            `<strong style="font-family: sans-serif; font-size: 14px;">${mapData.name || 'Target Location'}</strong>`
+          )
+          .addTo(map)
 
-      layersRef.current.push(marker)
-    } else if (mapData.mode === 'route') {
-      const startMarker = L.marker(mapData.start)
-        .bindPopup(`Origin: ${mapData.info.origin}`)
-        .addTo(map)
+        layersRef.current.push(marker)
+      } else if (mapData.mode === 'route' && mapData.start && mapData.end && mapData.path) {
+        // Blue for Origin, Red for Destination
+        const startMarker = L.marker(mapData.start, { icon: PremiumIcon('#2563eb') })
+          .bindPopup(`Origin: ${mapData.info?.origin || 'Start'}`)
+          .addTo(map)
 
-      const endMarker = L.marker(mapData.end)
-        .bindPopup(`Destination: ${mapData.info.destination}`)
-        .addTo(map)
+        const endMarker = L.marker(mapData.end, { icon: PremiumIcon('#ef4444') })
+          .bindPopup(`Destination: ${mapData.info?.destination || 'End'}`)
+          .addTo(map)
 
-      const routeLine = L.polyline(mapData.path, {
-        color: '#10b981', // Emerald 500
-        weight: 4,
-        opacity: 0.8,
-        lineCap: 'round'
-      }).addTo(map)
+        // Thick, highly visible Navigation Blue route line
+        const routeLine = L.polyline(mapData.path, {
+          color: '#2563eb',
+          weight: 6,
+          opacity: 0.85,
+          lineCap: 'round',
+          lineJoin: 'round'
+        }).addTo(map)
 
-      layersRef.current.push(startMarker, endMarker, routeLine)
+        layersRef.current.push(startMarker, endMarker, routeLine)
 
-      map.fitBounds(routeLine.getBounds(), { padding: [50, 50], duration: 1.5 })
+        if (mapData.path.length > 0) {
+          map.fitBounds(routeLine.getBounds(), { padding: [60, 60], duration: 1.5 })
+        }
+      }
+    } catch (err) {
+      console.error('[Map Rendering Error]:', err)
     }
   }, [mapData])
 
-  const closeMap = () => {
-    if (mapInstanceRef.current) {
-      mapInstanceRef.current.remove()
-      mapInstanceRef.current = null
-    }
-    setMapData(null)
-  }
+  const closeMap = () => setMapData(null)
 
   return (
     <AnimatePresence>
       {mapData && (
-        <div className="fixed inset-0 z-9999 flex items-center justify-center bg-black/80 backdrop-blur-xl p-8 font-sans">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 lg:p-8 font-sans">
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="relative w-full h-full max-w-6xl max-h-[85vh] bg-zinc-950 border border-white/10 rounded-3xl overflow-hidden shadow-2xl flex flex-col"
+            className="relative w-full h-full max-w-6xl max-h-[85vh] bg-white border border-white/20 rounded-[2rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col"
           >
-            <div className="absolute top-6 left-6 right-6 z-1000 flex justify-between items-start pointer-events-none">
-              <div className="bg-black/80 backdrop-blur-md border border-white/10 px-5 py-3 rounded-2xl pointer-events-auto shadow-xl flex items-center gap-4">
+            <div className="absolute top-4 left-4 right-4 lg:top-6 lg:left-6 lg:right-6 z-[1000] flex justify-between items-start pointer-events-none">
+              <div className="bg-black/90 backdrop-blur-xl border border-white/10 px-5 py-3.5 rounded-2xl pointer-events-auto shadow-2xl flex items-center gap-4">
                 {mapData.mode === 'route' ? (
                   <>
-                    <div className="p-2 bg-emerald-500/10 rounded-lg text-emerald-400">
+                    <div className="p-2.5 bg-blue-500/20 rounded-xl text-blue-400 border border-blue-500/20">
                       <RiRouteFill size={20} />
                     </div>
                     <div className="flex flex-col">
                       <h2 className="text-white font-bold text-sm tracking-wide">
-                        {mapData.info.origin} <span className="text-zinc-500 mx-2">→</span>{' '}
-                        {mapData.info.destination}
+                        {mapData.info?.origin} <span className="text-zinc-500 mx-2">→</span>{' '}
+                        {mapData.info?.destination}
                       </h2>
                       <div className="flex items-center gap-3 text-xs font-mono mt-1">
-                        <span className="text-emerald-400 flex items-center gap-1">
-                          <RiMapPin2Fill size={12} /> {mapData.info.distance}
+                        <span className="text-blue-400 flex items-center gap-1 font-semibold">
+                          <RiMapPin2Fill size={12} /> {mapData.info?.distance}
                         </span>
                         <span className="text-zinc-600">|</span>
-                        <span className="text-emerald-400 flex items-center gap-1">
-                          <RiTimeLine size={12} /> {mapData.info.duration}
+                        <span className="text-blue-400 flex items-center gap-1 font-semibold">
+                          <RiTimeLine size={12} /> {mapData.info?.duration}
                         </span>
                       </div>
                     </div>
                   </>
                 ) : (
                   <>
-                    <div className="p-2 bg-emerald-500/10 rounded-lg text-emerald-400">
+                    <div className="p-2.5 bg-blue-500/20 rounded-xl text-blue-400 border border-blue-500/20">
                       <RiMapPin2Fill size={20} />
                     </div>
                     <div className="flex flex-col">
-                      <span className="text-[10px] text-zinc-500 font-mono tracking-widest uppercase">
+                      <span className="text-[10px] text-zinc-400 font-mono tracking-widest uppercase">
                         Target Location
                       </span>
                       <h2 className="text-white font-bold text-base tracking-wide">
@@ -152,13 +209,17 @@ export default function LeafletMapWidget() {
 
               <button
                 onClick={closeMap}
-                className="bg-black/80 backdrop-blur-md border border-white/10 hover:border-red-500/50 hover:bg-red-500/10 text-zinc-400 hover:text-red-400 p-3 rounded-2xl pointer-events-auto transition-all shadow-xl cursor-pointer"
+                className="bg-black/90 backdrop-blur-xl border border-white/10 hover:border-red-500/50 hover:bg-red-500/20 text-zinc-300 hover:text-red-400 p-3.5 rounded-2xl pointer-events-auto transition-all shadow-2xl cursor-pointer"
               >
                 <RiCloseLine size={24} />
               </button>
             </div>
 
-            <div ref={mapContainerRef} className="flex-1 w-full bg-[#050505]" />
+            <div
+              ref={mapContainerRef}
+              className="flex-1 w-full bg-[#e5e3df] z-0"
+              style={{ width: '100%', height: '100%' }}
+            />
           </motion.div>
         </div>
       )}
