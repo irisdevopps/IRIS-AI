@@ -75,6 +75,20 @@ It is a **voice-first AI Operating System layer** that executes real-world actio
 
 ---
 
+# ✨ What's New In v1.5.1
+
+- Rebuilt voice architecture using Gemini Live SDK
+- Removed legacy WebSocket-heavy communication layer
+- Improved voice responsiveness and stability
+- Refactored tool execution pipeline
+- Improved memory handling
+- Improved vision support
+- Cleaner Electron-native architecture
+- Foundation for future premium modules
+- Updated branding and documentation
+
+---
+
 # 🎯 What is Voice-First?
 
 Traditional AI assistants are **text-first**: you type → they respond → you read.
