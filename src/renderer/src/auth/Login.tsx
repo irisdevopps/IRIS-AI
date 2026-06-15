@@ -21,7 +21,6 @@ export default function LoginPage() {
     window.open(`${import.meta.env.VITE_BACKEND_KEY}/users/google`, '_blank')
   }
 
-  // Visual-only startup sequence. Does not block the user anymore.
   useEffect(() => {
     const sequence = [
       'Mounting secure enclave...',
@@ -45,7 +44,6 @@ export default function LoginPage() {
     return () => clearInterval(interval)
   }, [])
 
-  // Smooth, deliberate animations
   const containerVariants = {
     hidden: { opacity: 0 },
     show: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.1 } }
@@ -63,11 +61,9 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-[#050505] font-sans flex items-center justify-center p-4 lg:p-8 relative overflow-hidden select-none">
-      {/* Premium Studio Lighting (Soft, deep glows, no harsh neon) */}
       <div className="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] bg-emerald-500/5 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-[-20%] right-[-10%] w-[50vw] h-[50vw] bg-zinc-500/5 blur-[120px] rounded-full pointer-events-none" />
 
-      {/* Micro-dot precision grid */}
       <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.03)_1px,transparent_1px)] bg-size-[32px_32px] pointer-events-none" />
 
       <motion.div
@@ -76,7 +72,6 @@ export default function LoginPage() {
         animate="show"
         className="w-full max-w-6xl relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch"
       >
-        {/* ── LEFT PANEL: Ambient Terminal ── */}
         <motion.div
           variants={sidePanelVariants}
           className="hidden lg:flex col-span-3 flex-col bg-zinc-900/30 backdrop-blur-2xl border border-white/5 rounded-2xl p-6 shadow-xl relative"
@@ -114,20 +109,17 @@ export default function LoginPage() {
           </div>
         </motion.div>
 
-        {/* ── CENTER PANEL: Main Authentication ── */}
         <motion.div
           variants={cardVariants}
           className="col-span-1 lg:col-span-6 flex flex-col items-center justify-center"
         >
           <div className="w-full bg-black/60 backdrop-blur-3xl border border-white/10 rounded-3xl p-10 shadow-2xl relative">
-            {/* Header / Branding */}
             <div className="flex flex-col items-center text-center mb-10">
               <img src="/Logo.png" className="w-24 h-24 object-cover" />
               <h1 className="text-3xl font-bold tracking-tight text-green-600 mb-2">IRIS AI</h1>
               <p className="text-zinc-400 text-sm font-medium">Desktop Voice Assistant</p>
             </div>
 
-            {/* Information Notice */}
             <div className="mb-8 p-4 rounded-xl bg-white/5 border border-white/5 flex items-start gap-4">
               <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
               <p className="text-sm text-zinc-300 leading-relaxed">
@@ -136,7 +128,6 @@ export default function LoginPage() {
               </p>
             </div>
 
-            {/* Premium Zero-Wait OAuth Button */}
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -154,7 +145,6 @@ export default function LoginPage() {
           </div>
         </motion.div>
 
-        {/* ── RIGHT PANEL: Ambient Diagnostics ── */}
         <motion.div
           variants={sidePanelVariants}
           className="hidden lg:flex col-span-3 flex-col bg-zinc-900/30 backdrop-blur-2xl border border-white/5 rounded-2xl p-6 shadow-xl"
@@ -167,7 +157,6 @@ export default function LoginPage() {
           </div>
 
           <div className="flex flex-col gap-8 flex-1">
-            {/* Diagnostic Row 1 */}
             <div className="flex flex-col gap-3">
               <div className="flex justify-between items-center text-xs font-medium text-zinc-400">
                 <span className="flex items-center gap-2">
@@ -184,7 +173,6 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Diagnostic Row 2 */}
             <div className="flex flex-col gap-3">
               <div className="flex justify-between items-center text-xs font-medium text-zinc-400">
                 <span className="flex items-center gap-2">
@@ -197,7 +185,6 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Diagnostic Row 3 */}
             <div className="flex flex-col gap-3">
               <div className="flex justify-between items-center text-xs font-medium text-zinc-400">
                 <span className="flex items-center gap-2">
