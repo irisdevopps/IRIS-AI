@@ -57,10 +57,11 @@ function ProgressBar({ progress }: { progress: number }) {
 export default function SettingsView({ isSystemActive }: SettingsProps) {
   const [activeTab, setActiveTab] = useState<TabType>('updates')
 
-  const [geminiKey, setGeminiKey] = useState(localStorage.getItem('iris_custom_api_key') || '')
-  const [groqKey, setGroqKey] = useState(localStorage.getItem('iris_groq_api_key') || '')
-  const [hfKey, setHfKey] = useState(localStorage.getItem('iris_hf_api_key') || '')
-  const [tailvyKey, setTailvyKey] = useState(localStorage.getItem('iris_tailvy_api_key') || '')
+  // Initialize as empty strings, NO localStorage
+  const [geminiKey, setGeminiKey] = useState('')
+  const [groqKey, setGroqKey] = useState('')
+  const [hfKey, setHfKey] = useState('')
+  const [tailvyKey, setTailvyKey] = useState('')
 
   const [isSecurityUnlocked, setIsSecurityUnlocked] = useState(false)
   const [authPin, setAuthPin] = useState('')
@@ -81,14 +82,25 @@ export default function SettingsView({ isSystemActive }: SettingsProps) {
   const [updateNotes, setUpdateNotes] = useState('No new updates detected. Your system is current.')
   const [downloadProgress, setDownloadProgress] = useState(0)
 
+  // Fetch securely from backend on mount
   useEffect(() => {
     if (window.electron?.ipcRenderer) {
+      window.electron.ipcRenderer.invoke('secure-get-keys').then((keys: any) => {
+        if (keys) {
+          setGeminiKey(keys.geminiKey || '')
+          setGroqKey(keys.groqKey || '')
+          setHfKey(keys.hfKey || '')
+          setTailvyKey(keys.tailvyKey || '')
+        }
+      })
+
       window.electron.ipcRenderer
         .invoke('check-vault-status')
-        .then((res) => setFaceCount(res?.faceCount || 0))
-      window.electron.ipcRenderer.invoke('get-app-version').then((v) => setAppVersion(v))
+        .then((res: any) => setFaceCount(res?.faceCount || 0))
 
-      window.electron.ipcRenderer.on('updater-event', (_e, { status, data, error }) => {
+      window.electron.ipcRenderer.invoke('get-app-version').then((v: string) => setAppVersion(v))
+
+      const handleUpdaterEvent = (_e: any, { status, data, error }: any) => {
         if (status === 'checking') setUpdateStatus('checking')
         if (status === 'available') {
           setUpdateStatus('available')
@@ -108,11 +120,13 @@ export default function SettingsView({ isSystemActive }: SettingsProps) {
           setUpdateStatus('error')
           setUpdateNotes(`Update failed: ${error}`)
         }
-      })
-    }
-    return () => {
-      if (window.electron?.ipcRenderer)
-        window.electron.ipcRenderer.removeAllListeners('updater-event')
+      }
+
+      window.electron.ipcRenderer.on('updater-event', handleUpdaterEvent)
+
+      return () => {
+        window.electron.ipcRenderer.removeListener('updater-event', handleUpdaterEvent)
+      }
     }
   }, [])
 
@@ -121,17 +135,21 @@ export default function SettingsView({ isSystemActive }: SettingsProps) {
   const installUpdate = () => window.electron.ipcRenderer.invoke('install-update')
 
   const saveApiKeys = async () => {
-    localStorage.setItem('iris_custom_api_key', geminiKey)
-    localStorage.setItem('iris_groq_api_key', groqKey)
-    localStorage.setItem('iris_hf_api_key', hfKey)
-    localStorage.setItem('iris_tailvy_api_key', tailvyKey)
-
     if (window.electron?.ipcRenderer) {
       try {
-        await window.electron.ipcRenderer.invoke('secure-save-keys', { groqKey, geminiKey })
-      } catch (e) {}
+        await window.electron.ipcRenderer.invoke('secure-save-keys', {
+          groqKey,
+          geminiKey,
+          hfKey,
+          tailvyKey
+        })
+        alert(
+          'API Keys securely encrypted and saved to Vault. Restart the application to apply changes.'
+        )
+      } catch (e) {
+        alert('Failed to save keys to the secure vault.')
+      }
     }
-    alert('API Keys saved successfully. Restart the application to apply changes.')
   }
 
   const unlockSecurityModule = async () => {
@@ -252,7 +270,7 @@ export default function SettingsView({ isSystemActive }: SettingsProps) {
           </div>
         </div>
 
-        <div className="relative min-h-125">
+        <div className="relative min-h-[500px]">
           <AnimatePresence mode="wait">
             {activeTab === 'updates' && (
               <motion.div
@@ -371,7 +389,7 @@ export default function SettingsView({ isSystemActive }: SettingsProps) {
                   </div>
                 </GlassPanel>
 
-                <GlassPanel className="md:col-span-5 p-0 flex flex-col h-full max-h-100">
+                <GlassPanel className="md:col-span-5 p-0 flex flex-col h-full max-h-[400px]">
                   <div className="bg-white/5 border-b border-white/10 px-6 py-4 flex items-center gap-3">
                     <RiInformationLine className="text-zinc-400" size={18} />
                     <span className="text-sm font-semibold text-white">Release Notes</span>
@@ -483,7 +501,7 @@ export default function SettingsView({ isSystemActive }: SettingsProps) {
                 transition={{ duration: 0.2 }}
                 className="w-full absolute"
               >
-                <GlassPanel className="p-0 overflow-hidden min-h-100">
+                <GlassPanel className="p-0 overflow-hidden min-h-[400px]">
                   <AnimatePresence>
                     {!isSecurityUnlocked && (
                       <motion.div
