@@ -145,7 +145,6 @@ export default function ResearchWidget() {
             transition={{ type: 'spring', stiffness: 260, damping: 24 }}
             className="w-full max-w-4xl h-[85vh] bg-neutral-950/75 backdrop-blur-3xl border border-neutral-800/60 rounded-2xl shadow-[0_0_100px_rgba(0,0,0,0.8),inset_0_1px_0_rgba(255,255,255,0.05)] text-white font-sans overflow-hidden flex flex-col"
           >
-            {/* Top Command Bar */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-800/60 bg-neutral-900/20 backdrop-blur-md">
               <div className="flex items-center gap-3">
                 <div className="relative">
@@ -180,9 +179,7 @@ export default function ResearchWidget() {
               </div>
             </div>
 
-            {/* Layout Grid */}
             <div className="flex-1 grid grid-cols-1 lg:grid-cols-5 overflow-hidden">
-              {/* Left Column: Diagnostics and Input Metrics */}
               <div className="lg:col-span-2 border-r border-neutral-800/50 bg-neutral-950/40 p-5 flex flex-col justify-between overflow-y-auto">
                 <div>
                   <div className="mb-5">
@@ -194,7 +191,6 @@ export default function ResearchWidget() {
                     </div>
                   </div>
 
-                  {/* Audit Logs */}
                   <div className="mb-4">
                     <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400 mb-2 flex items-center gap-1.5">
                       <Terminal className="w-3 h-3 text-neutral-500" /> Strategic Event Stream
@@ -225,7 +221,6 @@ export default function ResearchWidget() {
                   </div>
                 </div>
 
-                {/* Live Core Pulse */}
                 <div className="mt-4 pt-4 border-t border-neutral-900 flex items-center gap-3">
                   <div
                     className={`w-2 h-2 rounded-full ${isSuccess === false ? 'bg-red-500 shadow-[0_0_10px_#EF4444]' : 'bg-emerald-400 shadow-[0_0_10px_#10B981]'} animate-pulse`}
@@ -241,9 +236,7 @@ export default function ResearchWidget() {
                 </div>
               </div>
 
-              {/* Right Column: Execution Canvas / Dossier Viewer */}
               <div className="lg:col-span-3 bg-neutral-950/20 flex flex-col overflow-hidden">
-                {/* Active Dynamic Header Status Banner */}
                 <div className="p-4 bg-neutral-900/30 border-b border-neutral-900 flex items-center gap-3.5 px-6">
                   <div className="p-2 rounded-lg bg-neutral-900/60 border border-neutral-800">
                     {currentPhase <= 2 ? (
@@ -264,7 +257,6 @@ export default function ResearchWidget() {
                   </div>
                 </div>
 
-                {/* Comprehensive Output Window */}
                 <div className="flex-1 p-6 overflow-y-auto custom-scrollbar bg-linear-to-b from-neutral-950/50 to-transparent">
                   <AnimatePresence mode="wait">
                     {summary ? (
@@ -304,7 +296,6 @@ export default function ResearchWidget() {
               </div>
             </div>
 
-            {/* Bottom Glow Progress Tracks */}
             <div className="w-full bg-neutral-900/20 border-t border-neutral-800/40 p-4 px-6 flex items-center gap-4">
               <div className="flex-1 h-1.5 bg-neutral-900 rounded-full overflow-hidden relative">
                 <div
