@@ -36,7 +36,9 @@ export async function executeDeepResearch({ query }: { query: string }) {
           if (data.tavily) tavilyKey = Buffer.from(data.tavily, 'base64').toString('utf8')
           if (data.groq) groqKey = Buffer.from(data.groq, 'base64').toString('utf8')
         }
-      } catch (e) {}
+      } catch (e) {
+        console.error('Vault read error:', e)
+      }
     }
 
     if (!tavilyKey || !groqKey) {
@@ -91,6 +93,7 @@ export async function executeDeepResearch({ query }: { query: string }) {
         })
         return { subQuery, results: result.results }
       } catch (err) {
+        console.error(`Search failed for sub-query: ${subQuery}`, err)
         return { subQuery, results: [] }
       }
     })
@@ -152,7 +155,7 @@ export async function executeDeepResearch({ query }: { query: string }) {
 
     const finalSynthesis = await groq.chat.completions.create({
       messages: [{ role: 'user', content: synthesisPrompt }],
-      model: 'llama-3.3-70b-specdec', // Using a larger reasoning model if available, fallback to llama-3.1-8b-instant if needed
+      model: 'llama-3.3-70b-versatile', // 🚨 FIXED: Swapped decommissioned model for production versatile core
       response_format: { type: 'json_object' }
     })
 
@@ -180,6 +183,7 @@ export async function executeDeepResearch({ query }: { query: string }) {
     // Returning directly to the parent Gemini model ensures it fully grasps the scope of research
     return `Deep research agent successfully concluded operations.\n\nHere is the exhaustive Intelligence Dossier compiled autonomously:\n\n${complexDossier}\n\nYou now possess full knowledge of this data. Engage with the user using this context.`
   } catch (error: any) {
+    console.error('Agent Engine Error:', error)
     if (mainWindow) {
       mainWindow.webContents.send('deep-research-done', { success: false, summary: null })
     }
