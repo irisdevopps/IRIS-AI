@@ -45,8 +45,7 @@ export async function executeDeepResearch({ query }: { query: string }) {
     }
 
     if (!tailvyKey || !groqKey) {
-      console.log(error)
-      console.log(tailvyKey, groqKey)
+      console.log(tailvyKey)
       throw new Error('Missing API Keys. Please configure Tavily and Groq in the Command Center.')
     }
 
