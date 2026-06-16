@@ -51,7 +51,6 @@ const GalleryView = () => {
     try {
       const data = await window.electron.ipcRenderer.invoke('get-gallery')
       if (Array.isArray(data)) {
-        // Map types based on extension and SORT by newest first (descending)
         const typedData = data
           .map((item: any) => ({
             ...item,
