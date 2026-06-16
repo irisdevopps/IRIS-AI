@@ -23,7 +23,15 @@ import registerLockSystem from './security/lock-system'
 import { autoUpdater } from 'electron-updater'
 import { pushVisionToGemini, StartIRIS, stopIRIS, toggleIRISMic } from './agents/iris-ai'
 import { getMemory } from './hooks/iris-memory'
-import { getAdbHistory } from './mobile/adb-manager'
+import {
+  connectAdb,
+  disconnectAdb,
+  executeAdbQuickAction,
+  getAdbHistory,
+  getAdbNotifications,
+  getAdbTelemetry,
+  takeAdbScreenshot
+} from './mobile/adb-manager'
 import registerSystemHandlers from './lib/system'
 import registerFrontendIPC from './handler/ui-ipc-bridge'
 import { executeDeepResearch } from './services/deep-research'
@@ -327,6 +335,30 @@ app.whenReady().then(() => {
   registerSystemHandlers(ipcMain)
   ipcMain.handle('trigger-deep-research', async (event, { query }) => {
     return await executeDeepResearch({ query })
+  })
+
+  ipcMain.handle('adb-connect', async (_, args) => {
+    return await connectAdb({ ip: args.ip, port: args.port })
+  })
+
+  ipcMain.handle('adb-disconnect', async () => {
+    return await disconnectAdb()
+  })
+
+  ipcMain.handle('adb-telemetry', async () => {
+    return await getAdbTelemetry()
+  })
+
+  ipcMain.handle('adb-quick-action', async (_, args) => {
+    return await executeAdbQuickAction(args.action)
+  })
+
+  ipcMain.handle('adb-screenshot', async () => {
+    return await takeAdbScreenshot()
+  })
+
+  ipcMain.handle('adb-get-notifications', async () => {
+    return await getAdbNotifications()
   })
 
   registerLockSystem()
