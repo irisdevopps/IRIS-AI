@@ -442,65 +442,83 @@ export async function executeCameraControl({
     // 2. Wake Device Stealthily
     await execAsync(`adb ${target} shell input keyevent KEYCODE_WAKEUP`)
 
-    // 3. BASELINE CHECK: Get the old file so we don't pull a duplicate
+    // 3. BASELINE CHECK: Get the old file (Strictly filtering for actual media files, ignoring .temp)
+    const mediaFilterCmd = `grep -i -e '\\.jpg$' -e '\\.jpeg$' -e '\\.mp4$'`
     const { stdout: beforeFileStr } = await execAsync(
-      `adb ${target} shell "ls -t /sdcard/DCIM/Camera 2>/dev/null | head -n 1"`
+      `adb ${target} shell "ls -t /sdcard/DCIM/Camera 2>/dev/null | ${mediaFilterCmd} | head -n 1"`
     ).catch(() => ({ stdout: '' }))
     const oldFile = beforeFileStr.trim()
 
-    // 4. Force specific Lens Intent
+    // 4. 🚨 CRITICAL FIX: DYNAMIC COLD BOOT
+    // Find the exact camera package installed on THIS specific phone and assassinate it
+    const { stdout: resolveOut } = await execAsync(
+      `adb ${target} shell cmd package resolve-activity -a android.media.action.STILL_IMAGE_CAMERA`
+    ).catch(() => ({ stdout: '' }))
+
+    const pkgMatch = resolveOut.match(/packageName=([^\s]+)/)
+    if (pkgMatch && pkgMatch[1]) {
+      await execAsync(`adb ${target} shell am force-stop ${pkgMatch[1]}`).catch(() => {})
+    } else {
+      // Fallbacks if resolve fails
+      await execAsync(`adb ${target} shell am force-stop com.google.android.GoogleCamera`).catch(
+        () => {}
+      )
+      await execAsync(`adb ${target} shell am force-stop com.sec.android.app.camera`).catch(
+        () => {}
+      )
+      await execAsync(`adb ${target} shell am force-stop com.android.camera`).catch(() => {})
+    }
+
+    // 5. 🚨 CRITICAL FIX: MEGA-PAYLOAD INTENT
     const isFront = lens === 'front'
     const intentAction =
       mode === 'video'
         ? 'android.media.action.VIDEO_CAMERA'
         : 'android.media.action.STILL_IMAGE_CAMERA'
 
+    // This payload brute-forces Google, Samsung, Xiaomi, and Generic Android APIs simultaneously
     const extras = isFront
-      ? `--ez android.intent.extra.USE_FRONT_CAMERA true --ez com.google.assistant.extra.USE_FRONT_CAMERA true --ei android.intent.extras.CAMERA_FACING 1`
-      : `--ez android.intent.extra.USE_FRONT_CAMERA false --ei android.intent.extras.CAMERA_FACING 0`
+      ? `--ei android.intent.extras.CAMERA_FACING 1 --ez android.intent.extra.USE_FRONT_CAMERA true --ez frontcamera true --ez com.google.assistant.extra.USE_FRONT_CAMERA true --ei camera.extras.camera.facing 1`
+      : `--ei android.intent.extras.CAMERA_FACING 0 --ez android.intent.extra.USE_FRONT_CAMERA false --ez frontcamera false --ei camera.extras.camera.facing 0`
 
-    // Force stop camera apps to clear previous lens states
-    await execAsync(`adb ${target} shell am force-stop com.google.android.GoogleCamera`).catch(
-      () => {}
-    )
-    await execAsync(`adb ${target} shell am force-stop com.sec.android.app.camera`).catch(() => {})
-
-    // Launch Camera App
+    // Launch Camera App (Now guaranteed to be a Cold Boot)
     await execAsync(`adb ${target} shell am start -a ${intentAction} ${extras}`)
 
-    // 🚨 BUG FIX 1: The Hardware Warmup
-    // We MUST wait 4.5 seconds for the Android OS to fully load the camera UI before pressing the shutter.
+    // Wait for the UI to fully render (Cold boots take longer)
     await new Promise((r) => setTimeout(r, 4500))
 
-    // 5. Accurate Capture / Record Cycle
+    // 6. 🚨 CRITICAL FIX: ACCURATE RECORDING TIMERS
     if (mode === 'video') {
       await execAsync(`adb ${target} shell input keyevent KEYCODE_CAMERA`) // START RECORDING
+
+      // The UI takes ~1.5 seconds to actually start the timer after the button is pressed
+      await new Promise((r) => setTimeout(r, 1500))
 
       // Wait EXACT requested duration
       await new Promise((r) => setTimeout(r, duration * 1000))
 
       await execAsync(`adb ${target} shell input keyevent KEYCODE_CAMERA`) // STOP RECORDING
 
-      // 🚨 BUG FIX 2: Video Encoding Buffer
-      // MP4 files take 3-4 seconds to mux and save to disk after recording stops.
-      await new Promise((r) => setTimeout(r, 3500))
+      // Wait for MP4 muxing/encoding to finish saving to disk
+      await new Promise((r) => setTimeout(r, 4000))
     } else {
       await execAsync(`adb ${target} shell input keyevent KEYCODE_CAMERA`) // SNAP PHOTO
-      await new Promise((r) => setTimeout(r, 2000)) // HDR Processing delay
+      await new Promise((r) => setTimeout(r, 2500)) // HDR Processing delay
     }
 
-    // 6. POLLING LOOP: Wait for the OS to verify the NEW file on the disk
+    // 7. POLLING LOOP: Wait for the OS to verify the NEW media file is written
     let cleanFileName = ''
     let attempts = 0
     while (attempts < 10) {
       await new Promise((r) => setTimeout(r, 1000))
 
       const { stdout: latestFileStr } = await execAsync(
-        `adb ${target} shell "ls -t /sdcard/DCIM/Camera 2>/dev/null | head -n 1"`
+        `adb ${target} shell "ls -t /sdcard/DCIM/Camera 2>/dev/null | ${mediaFilterCmd} | head -n 1"`
       ).catch(() => ({ stdout: '' }))
 
       const newFile = latestFileStr.trim()
 
+      // If the file is valid and it's NOT the old file, the capture is successfully saved!
       if (newFile && newFile !== oldFile) {
         cleanFileName = newFile
         break
@@ -510,10 +528,10 @@ export async function executeCameraControl({
 
     if (!cleanFileName) {
       await execAsync(`adb ${target} shell input keyevent KEYCODE_HOME`)
-      return { success: false, error: 'Camera hardware timeout. Media failed to write to disk.' }
+      return { success: false, error: 'Hardware timeout. File failed to save to device disk.' }
     }
 
-    // 7. Generate File Path & Pull to PC
+    // 8. Generate File Path & Pull to PC
     const extension = cleanFileName.split('.').pop() || (mode === 'video' ? 'mp4' : 'jpg')
     const timestamp = Date.now()
     const targetFilename = `IRIS_Capture_${timestamp}.${extension}`
@@ -521,7 +539,7 @@ export async function executeCameraControl({
 
     await execAsync(`adb ${target} pull "/sdcard/DCIM/Camera/${cleanFileName}" "${pcPath}"`)
 
-    // 8. Cover tracks: return to Home Screen
+    // 9. Cover tracks: return to Home Screen
     await execAsync(`adb ${target} shell input keyevent KEYCODE_HOME`)
 
     return {
