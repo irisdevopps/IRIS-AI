@@ -146,7 +146,7 @@ const GalleryView = () => {
       {/* Premium Header */}
       <div className="flex items-end justify-between pb-6 border-b border-white/5 mb-8 shrink-0">
         <div className="flex items-center gap-4">
-          <div className="p-3 bg-gradient-to-br from-emerald-500/20 to-teal-500/5 rounded-2xl border border-emerald-500/30 shadow-[0_0_30px_rgba(16,185,129,0.15)] relative overflow-hidden">
+          <div className="p-3 bg-linear-to-br from-emerald-500/20 to-teal-500/5 rounded-2xl border border-emerald-500/30 shadow-[0_0_30px_rgba(16,185,129,0.15)] relative overflow-hidden">
             <div className="absolute inset-0 bg-emerald-400/20 blur-xl animate-pulse" />
             <RiSearchEyeLine className="text-emerald-400 relative z-10" size={28} />
           </div>
@@ -196,13 +196,13 @@ const GalleryView = () => {
                     setDirection(0)
                     setSelectedAsset(asset)
                   }}
-                  className="group relative aspect-square md:aspect-[4/5] bg-neutral-900 rounded-2xl border border-white/5 overflow-hidden hover:border-emerald-500/50 hover:shadow-[0_10px_40px_-10px_rgba(16,185,129,0.3)] transition-all duration-500 cursor-pointer"
+                  className="group relative aspect-square md:aspect-4/5 bg-neutral-900 rounded-2xl border border-white/5 overflow-hidden hover:border-emerald-500/50 hover:shadow-[0_10px_40px_-10px_rgba(16,185,129,0.3)] transition-all duration-500 cursor-pointer"
                 >
                   {/* Thumbnail Rendering */}
                   {isVideo ? (
                     <video
                       src={asset.url}
-                      className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-60 group-hover:opacity-100 grayscale-[30%] group-hover:grayscale-0"
+                      className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-60 group-hover:opacity-100 grayscale-30 group-hover:grayscale-0"
                       preload="metadata"
                       muted
                       playsInline
@@ -216,7 +216,7 @@ const GalleryView = () => {
                         e.currentTarget.style.display = 'none'
                         e.currentTarget.nextElementSibling?.classList.remove('hidden')
                       }}
-                      className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-60 group-hover:opacity-100 grayscale-[30%] group-hover:grayscale-0"
+                      className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-60 group-hover:opacity-100 grayscale-30 group-hover:grayscale-0"
                     />
                   )}
 
@@ -237,7 +237,7 @@ const GalleryView = () => {
                   )}
 
                   {/* Hover Information Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-5 translate-y-4 group-hover:translate-y-0">
+                  <div className="absolute inset-0 bg-linear-to-t from-black via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-5 translate-y-4 group-hover:translate-y-0">
                     <div className="mb-4">
                       <p className="text-xs text-white font-black mb-1 tracking-wider capitalize truncate">
                         {asset.displayName}
@@ -289,10 +289,10 @@ const GalleryView = () => {
             animate={{ opacity: 1, backdropFilter: 'blur(25px)' }}
             exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
             transition={{ duration: 0.4 }}
-            className="fixed inset-0 z-[9999] bg-black/90 flex items-center justify-center"
+            className="fixed inset-0 z-9999 bg-black/90 flex items-center justify-center"
           >
             {/* Top Bar Controls */}
-            <div className="absolute top-0 left-0 right-0 p-6 flex justify-between items-center z-50 bg-gradient-to-b from-black/80 to-transparent">
+            <div className="absolute top-0 left-0 right-0 p-6 flex justify-between items-center z-50 bg-linear-to-b from-black/80 to-transparent">
               <div className="text-left px-5 py-2.5 bg-black/40 backdrop-blur-xl rounded-xl border border-white/5">
                 <h3 className="text-lg font-black text-white capitalize tracking-wide flex items-center gap-3">
                   {selectedAsset.type === 'video' ? (
@@ -317,7 +317,7 @@ const GalleryView = () => {
 
             {/* Navigation Areas */}
             <div
-              className="absolute left-0 top-0 bottom-0 w-32 z-40 flex items-center justify-start pl-8 group cursor-pointer hover:bg-gradient-to-r hover:from-black/60 hover:to-transparent transition-colors"
+              className="absolute left-0 top-0 bottom-0 w-32 z-40 flex items-center justify-start pl-8 group cursor-pointer hover:bg-linear-to-r hover:from-black/60 hover:to-transparent transition-colors"
               onClick={() => navigateAsset(-1)}
             >
               <div className="p-5 bg-black/40 group-hover:bg-white text-white group-hover:text-black rounded-full transition-all border border-white/10 transform group-hover:-translate-x-2 backdrop-blur-md">
@@ -326,7 +326,7 @@ const GalleryView = () => {
             </div>
 
             <div
-              className="absolute right-0 top-0 bottom-0 w-32 z-40 flex items-center justify-end pr-8 group cursor-pointer hover:bg-gradient-to-l hover:from-black/60 hover:to-transparent transition-colors"
+              className="absolute right-0 top-0 bottom-0 w-32 z-40 flex items-center justify-end pr-8 group cursor-pointer hover:bg-linear-to-l hover:from-black/60 hover:to-transparent transition-colors"
               onClick={() => navigateAsset(1)}
             >
               <div className="p-5 bg-black/40 group-hover:bg-white text-white group-hover:text-black rounded-full transition-all border border-white/10 transform group-hover:translate-x-2 backdrop-blur-md">
