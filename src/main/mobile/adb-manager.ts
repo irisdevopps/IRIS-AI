@@ -50,11 +50,9 @@ export async function getAdbHistory() {
 
 export async function connectAdb({ ip, port }: { ip: string; port: string }) {
   try {
-    // 🚨 FIX: Purge dead daemon connections before initializing TCP/IP link
     await execAsync(`adb kill-server`).catch(() => {})
     await execAsync(`adb start-server`).catch(() => {})
 
-    // Give daemon breathing room
     await new Promise((resolve) => setTimeout(resolve, 500))
 
     const { stdout } = await execAsync(`adb connect ${ip}:${port}`)
