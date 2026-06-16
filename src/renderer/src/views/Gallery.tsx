@@ -24,7 +24,6 @@ interface GalleryAsset {
   type: 'image' | 'video'
 }
 
-
 const GalleryView = () => {
   const [allAssets, setAllAssets] = useState<GalleryAsset[]>([])
   const [visibleAssets, setVisibleAssets] = useState<GalleryAsset[]>([])
