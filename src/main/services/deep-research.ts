@@ -1,7 +1,8 @@
-import { BrowserWindow } from 'electron'
+import { BrowserWindow, safeStorage, app } from 'electron'
 import { tavily } from '@tavily/core'
 import Groq from 'groq-sdk'
-
+import fsSync from 'fs'
+import path from 'path'
 
 function emitProgress(payload: { status: string; file: string; totalFound: number }) {
   const win = BrowserWindow.getAllWindows()[0]
@@ -10,10 +11,8 @@ function emitProgress(payload: { status: string; file: string; totalFound: numbe
   }
 }
 
-
 export async function executeDeepResearch({
   query,
-  tavilyKey,
   groqKey
 }: {
   query: string
@@ -21,6 +20,20 @@ export async function executeDeepResearch({
   groqKey: string
 }) {
   try {
+    let tavilyKey = ''
+    const secureConfigPath = path.join(app.getPath('userData'), 'iris_secure_vault.json')
+
+    if (fsSync.existsSync(secureConfigPath)) {
+      try {
+        const data = JSON.parse(fsSync.readFileSync(secureConfigPath, 'utf8'))
+        if (safeStorage.isEncryptionAvailable()) {
+          tavilyKey = safeStorage.decryptString(Buffer.from(data.tavily, 'base64'))
+        } else {
+          tavilyKey = Buffer.from(data.tavily, 'base64').toString('utf8')
+        }
+      } catch (e) {}
+    }
+
     if (!tavilyKey || !groqKey) {
       throw new Error('Missing API Keys. Please configure Tavily and Groq in the Command Center.')
     }
