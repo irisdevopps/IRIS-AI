@@ -4,7 +4,6 @@ import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 import {
   Globe,
-  FileText,
   Cpu,
   CheckCircle2,
   ShieldAlert,
@@ -57,7 +56,6 @@ export default function ResearchWidget() {
         const phaseNumber = data.totalFound
         setCurrentPhase(phaseNumber)
 
-        // Append to agent diagnostic logs
         const time = new Date().toLocaleTimeString([], {
           hour: '2-digit',
           minute: '2-digit',
@@ -81,7 +79,6 @@ export default function ResearchWidget() {
         }
 
         if (progressRef.current) {
-          // Dynamic 5-phase percentage allocation mapping to your new agent code steps
           const percentages = ['20%', '40%', '65%', '85%', '95%']
           const targetWidth = percentages[phaseNumber - 1] || '90%'
           gsap.to(progressRef.current, { width: targetWidth, duration: 0.8, ease: 'power3.out' })
@@ -123,7 +120,6 @@ export default function ResearchWidget() {
         })
       }
 
-      // Removed forced self-close timer so users can comfortably consume the advanced markdown data dossier.
     })
 
     window.electron.ipcRenderer.on('deep-research-start', handleStart)
