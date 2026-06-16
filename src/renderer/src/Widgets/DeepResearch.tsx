@@ -140,7 +140,7 @@ export default function ResearchWidget() {
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-md z-[9999] flex items-center justify-center p-4 selection:bg-cyan-500/30">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-md z-9999 flex items-center justify-center p-4 selection:bg-cyan-500/30">
           <motion.div
             ref={containerRef}
             initial={{ opacity: 0, scale: 0.96, y: 15, filter: 'blur(10px)' }}
@@ -200,7 +200,7 @@ export default function ResearchWidget() {
 
                   {/* Audit Logs */}
                   <div className="mb-4">
-                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400 block mb-2 flex items-center gap-1.5">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400 mb-2 flex items-center gap-1.5">
                       <Terminal className="w-3 h-3 text-neutral-500" /> Strategic Event Stream
                     </span>
                     <div className="space-y-2 max-h-[30vh] overflow-y-auto pr-1 custom-scrollbar text-[11px] font-mono">
@@ -269,7 +269,7 @@ export default function ResearchWidget() {
                 </div>
 
                 {/* Comprehensive Output Window */}
-                <div className="flex-1 p-6 overflow-y-auto custom-scrollbar bg-gradient-to-b from-neutral-950/50 to-transparent">
+                <div className="flex-1 p-6 overflow-y-auto custom-scrollbar bg-linear-to-b from-neutral-950/50 to-transparent">
                   <AnimatePresence mode="wait">
                     {summary ? (
                       <motion.div
@@ -313,7 +313,7 @@ export default function ResearchWidget() {
               <div className="flex-1 h-1.5 bg-neutral-900 rounded-full overflow-hidden relative">
                 <div
                   ref={progressRef}
-                  className="h-full bg-gradient-to-r from-cyan-500 to-indigo-500 rounded-full w-0 shadow-[0_0_15px_rgba(6,182,212,0.6)]"
+                  className="h-full bg-linear-to-r from-cyan-500 to-indigo-500 rounded-full w-0 shadow-[0_0_15px_rgba(6,182,212,0.6)]"
                 />
               </div>
               <span className="text-[10px] font-mono text-neutral-400 w-8 text-right">
