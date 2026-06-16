@@ -22,7 +22,7 @@ export async function executeDeepResearch({ query }: { query: string }) {
   }
 
   try {
-    let tavilyKey = ''
+    let tailvyKey = ''
     let groqKey = ''
     const secureConfigPath = path.join(app.getPath('userData'), 'iris_secure_vault.json')
 
@@ -32,10 +32,10 @@ export async function executeDeepResearch({ query }: { query: string }) {
         const data = JSON.parse(fsSync.readFileSync(secureConfigPath, 'utf8'))
 
         if (safeStorage.isEncryptionAvailable()) {
-          if (data.tavily) tavilyKey = safeStorage.decryptString(Buffer.from(data.tavily, 'base64'))
+          if (data.tavily) tailvyKey = safeStorage.decryptString(Buffer.from(data.tavily, 'base64'))
           if (data.groq) groqKey = safeStorage.decryptString(Buffer.from(data.groq, 'base64'))
         } else {
-          if (data.tavily) tavilyKey = Buffer.from(data.tavily, 'base64').toString('utf8')
+          if (data.tavily) tailvyKey = Buffer.from(data.tavily, 'base64').toString('utf8')
           if (data.groq) groqKey = Buffer.from(data.groq, 'base64').toString('utf8')
         }
       } catch (e) {
@@ -43,7 +43,7 @@ export async function executeDeepResearch({ query }: { query: string }) {
       }
     }
 
-    if (!tavilyKey || !groqKey) {
+    if (!tailvyKey || !groqKey) {
       throw new Error('Missing API Keys. Please configure Tavily and Groq in the Command Center.')
     }
 
@@ -54,7 +54,7 @@ export async function executeDeepResearch({ query }: { query: string }) {
     })
 
     // 3. Execute Web Crawl
-    const tvly = tavily({ apiKey: tavilyKey })
+    const tvly = tavily({ apiKey: tailvyKey })
     const tavilyData = await tvly.search(query, {
       searchDepth: 'advanced',
       includeAnswer: true,
