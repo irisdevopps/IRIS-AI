@@ -31,7 +31,7 @@ import {
   getAdbNotifications,
   getAdbTelemetry,
   takeAdbScreenshot
-} from './mobile/adb-manager'
+} from './mobile/mobile-manager'
 import registerSystemHandlers from './lib/system'
 import registerFrontendIPC from './handler/ui-ipc-bridge'
 import { executeDeepResearch } from './services/deep-research'
