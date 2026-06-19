@@ -22,13 +22,13 @@ versions.js
 
 versions.js
 gmail_token.json
+global
 
 eng.traineddata
 
 agents
 
 tools.ts
-global
 IRISB.tsx
 AICoreSphere.tsx
 mobile-manager.ts
