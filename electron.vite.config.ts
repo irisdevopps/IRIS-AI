@@ -11,6 +11,9 @@ export default defineConfig({
       bytecode: {
         transformArrowFunctions: true,
         removeBundleJS: true
+      },
+      rollupOptions: {
+        external: ['vosk-koffi']
       }
     }
   },
