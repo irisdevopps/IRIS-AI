@@ -28,12 +28,33 @@ const IndexRoot = () => {
 
   useEffect(() => {
     if ((window as any).iris) {
-      ;(window as any).iris.onSystemStatus((status: any) => {
+      // 1. Listen for standard status changes
+      ;(window as any).iris.onSystemStatus((status: Status) => {
         setSystemStatus(status)
+
+        // 🚨 THE FIX: Sync the connected state based on what the backend says
+        if (status === 'ACTIVE' || status === 'CONNECTING') {
+          setIsConnected(true)
+        } else if (status === 'STANDBY' || status === 'ERROR') {
+          setIsConnected(false)
+          setIsMuted(false) // Auto-unmute when returning to standby
+        }
       })
+
+      // 2. Listen for speaking state
       ;(window as any).iris.onSpeakingState((speaking: boolean) => {
         setIsSpeaking(speaking)
       })
+
+      // 3. 🚨 Listen for the INSTANT wake word trigger
+      // This makes the UI glow up the exact millisecond you say "Jarvis"
+      if ((window as any).iris.onWakeWordTriggered) {
+        ;(window as any).iris.onWakeWordTriggered(() => {
+          console.log('[UI] Wake word recognized! Booting UI...')
+          setIsConnected(true)
+          setSystemStatus('CONNECTING')
+        })
+      }
     }
   }, [])
 
