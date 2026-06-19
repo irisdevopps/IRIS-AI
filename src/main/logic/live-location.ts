@@ -3,7 +3,6 @@ import os from 'os'
 import fs from 'fs'
 import path from 'path'
 
-// Helper to execute terminal commands
 const runCommand = (cmd: string): Promise<string> => {
   return new Promise((resolve) => {
     exec(cmd, { maxBuffer: 1024 * 1024 }, (error, stdout) => {
