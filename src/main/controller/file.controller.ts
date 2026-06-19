@@ -14,7 +14,6 @@ const runCommand = (cmd: string): Promise<string> => {
 }
 
 /**
- * Retrieves a distinct list of running visible window application names
  */
 export async function getRunningApps(): Promise<string[]> {
   try {
@@ -41,7 +40,6 @@ export async function getRunningApps(): Promise<string[]> {
 }
 
 /**
- * Opens any file or path using the OS default application handler
  */
 export async function openFile(filePath: string): Promise<{ success: boolean; error?: string }> {
   try {
@@ -54,7 +52,6 @@ export async function openFile(filePath: string): Promise<{ success: boolean; er
 }
 
 /**
- * Highlights and displays the targeted item inside its parent OS directory window
  */
 export async function revealFile(filePath: string): Promise<{ success: boolean; error?: string }> {
   try {
@@ -66,7 +63,6 @@ export async function revealFile(filePath: string): Promise<{ success: boolean; 
 }
 
 /**
- * Reads the directory layout, explicitly flagging files versus subfolders
  */
 export async function readDirectory(directoryPath: string): Promise<string> {
   try {
@@ -85,7 +81,6 @@ export async function readDirectory(directoryPath: string): Promise<string> {
 }
 
 /**
- * Reads text contents from specified file targets up to a 3000 character safety buffer
  */
 export async function readFile(filePath: string): Promise<string> {
   try {
@@ -97,7 +92,6 @@ export async function readFile(filePath: string): Promise<string> {
 }
 
 /**
- * Writes or overwrites text streams into target paths, defaulting targets to User Desktop
  */
 export async function writeFile({
   fileName,
@@ -110,7 +104,6 @@ export async function writeFile({
     const isAbsolutePath = fileName.includes('/') || fileName.includes('\\')
     const targetPath = isAbsolutePath ? fileName : path.join(app.getPath('desktop'), fileName)
 
-    // Automatically ensure the containing directory structure exists
     await fs.mkdir(path.dirname(targetPath), { recursive: true })
     await fs.writeFile(targetPath, content, 'utf-8')
     return `Success: File safely written to ${targetPath}`
