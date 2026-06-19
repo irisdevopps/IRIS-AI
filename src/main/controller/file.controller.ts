@@ -36,8 +36,6 @@ export async function getRunningApps(): Promise<string[]> {
   }
 }
 
-/**
- */
 export async function openFile(filePath: string): Promise<{ success: boolean; error?: string }> {
   try {
     const error = await shell.openPath(filePath)
@@ -48,8 +46,6 @@ export async function openFile(filePath: string): Promise<{ success: boolean; er
   }
 }
 
-/**
- */
 export async function revealFile(filePath: string): Promise<{ success: boolean; error?: string }> {
   try {
     shell.showItemInFolder(filePath)
