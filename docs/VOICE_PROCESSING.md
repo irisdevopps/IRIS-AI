@@ -1,5 +1,5 @@
-> **[TIER ALIGNMENT: IRIS MAX COMMERCIAL LICENSE REQUIRED]**
-> *This document covers core voice orchestration loops, tools, and execution pipelines protected under the $250 IRIS MAX License.*
+> **[TIER ALIGNMENT: IRIS PRO COMMERCIAL LICENSE REQUIRED]**
+> *This document covers core voice orchestration loops, tools, and execution pipelines protected under the ₹499 IRIS PRO License.*
 
 # 🎙️ Voice Processing
 

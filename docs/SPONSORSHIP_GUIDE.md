@@ -1,20 +1,13 @@
-> **[TIER ALIGNMENT: IRIS COMMUNITY EDITION (Free & Open Source)]**
-> *Access to the high-performance desktop framework shell (Electron + Vite + React 19 + Tailwind v4).*
+> **[TIER ALIGNMENT: GITHUB SPONSORSHIP PROGRAM]**
 
-# 💰 Commercial Licensing Guide
+# 💖 GitHub Sponsorship Program
 
-IRIS uses a strict Commercial Open-Core model.
+For developers looking to support the project, study legacy architecture, or gain early access to experimental features, we offer the following sponsorship tiers:
 
-## IRIS Community Edition (Free & Open Source)
-- **Cost:** Free
-- Access to the high-performance desktop framework shell (Electron + Vite + React 19 + Tailwind v4).
-- Fully customizable UI layouts, themes, widgets, and standard window management.
-- Built under the permissive MIT License for public contributions.
-- Core AI routing, background execution loops, and autonomous system tools are disabled/hidden.
+- **$5/mo (IRIS Supporter):** Sponsor badge, sponsor-only updates, development progress reports, and monthly project updates.
+- **$15/mo (IRIS Insider):** Everything in Supporter + access to the private `iris-insiders` repository, early development previews, architecture discussions, and behind-the-scenes progress.
+- **$30/mo (IRIS Builder):** Everything in previous + access to `iris-labs`, experimental AI agents, prototype systems, technical logs, and alpha feature testing.
+- **$50/mo (IRIS Alpha Access):** Everything in previous + access to `iris-alpha`, early alpha builds, upcoming feature previews, private release notes, and priority feedback.
+- **$250/mo (IRIS MAX):** Everything in previous + access to the private `IRIS Legacy Repository`. Includes the full IRIS v1 source archive, legacy voice agent implementation, legacy tool execution system, architecture documentation, and archived releases.
 
-## IRIS MAX (Commercial Core License)
-- **Cost:** $250 / Approx. ₹22,000 One-Time
-- Grants a lifetime, single-seat perpetual license to the fully compiled, highly protected native binary core.
-- Unlocks the core voice orchestration loops, Gemini 3.1 Live API WebRTC bidirectional streaming, and local LanceDB vector search.
-- Unlocks advanced, automated system utilities: Deep Research Agent, ScreenPeeler OCR, Phantom Typer, Livecoding, and Mobile Telekinesis.
-- Protected completely via native V8 Bytecode compilation and strict server-side cryptographic hardware identity (HWID) verification guards.
+> **CRITICAL DISCLAIMER FOR IRIS MAX:** This tier provides access to the *legacy IRIS v1 codebase only*. Current proprietary systems, IRIS 2.0, commercial modules, private infrastructure, and future internal development are explicitly NOT included.
