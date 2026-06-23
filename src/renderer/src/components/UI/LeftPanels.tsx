@@ -261,7 +261,6 @@ export default function LeftPanelsPremium({
     network: { tx: 0, rx: 0, latency: 0 }
   })
 
-  // Vision logic
   useEffect(() => {
     if (visionMode === 'off' || !visionMode || !isActive) {
       if (streamRef.current) {
