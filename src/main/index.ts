@@ -1,53 +1,35 @@
-import { app, shell, BrowserWindow, ipcMain, globalShortcut } from 'electron'
-import path, { join } from 'path'
-import { electronApp, optimizer } from '@electron-toolkit/utils'
+import { app, shell, BrowserWindow, ipcMain, desktopCapturer, session } from 'electron'
+import { join } from 'path'
+import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
-if (process.defaultApp) {
-  if (process.argv.length >= 2) {
-    app.setAsDefaultProtocolClient('iris', process.execPath, [path.resolve(process.argv[1])])
-  }
-} else {
-  app.setAsDefaultProtocolClient('iris')
-}
-
-const gotTheLock = app.requestSingleInstanceLock()
-if (!gotTheLock) {
-  app.quit()
-}
-
-let mainWindow: BrowserWindow | null = null
-
 function createWindow(): void {
-  mainWindow = new BrowserWindow({
-    width: 1280,
-    height: 720,
+  const mainWindow = new BrowserWindow({
+    width: 1200,
+    height: 800,
     show: false,
-    fullscreen: true,
     autoHideMenuBar: true,
-    frame: false,
-    transparent: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
-      preload: join(__dirname, '../preload/index.js')
+      preload: join(__dirname, '../preload/index.js'),
+      sandbox: false
     }
   })
 
   mainWindow.on('ready-to-show', () => {
-    if (mainWindow) mainWindow.show()
-  })
-
-  ipcMain.on('window-min', () => mainWindow?.minimize())
-  ipcMain.on('window-close', () => mainWindow?.close())
-  ipcMain.on('window-max', () => {
-    if (mainWindow?.isMaximized()) mainWindow.unmaximize()
-    else mainWindow?.maximize()
+    mainWindow.show()
   })
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
     shell.openExternal(details.url)
     return { action: 'deny' }
   })
+
+  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
+  } else {
+    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+  }
 }
 
 app.whenReady().then(() => {
@@ -57,15 +39,55 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
+  session.defaultSession.setDisplayMediaRequestHandler((_request: any, callback: any) => {
+    desktopCapturer
+      .getSources({ types: ['screen'] })
+      .then((sources) => {
+        if (sources && sources.length > 0) {
+          callback({ video: sources[0] })
+        } else {
+          console.error('[IRIS] No screens found to share.')
+          // @ts-ignore - explicitly fail the callback safely
+          callback()
+        }
+      })
+      .catch((err) => {
+        console.error('[IRIS] Screen capture failed:', err)
+        // @ts-ignore
+        callback()
+      })
+  })
+
+  ipcMain.on('iris:start-session', (event) => {
+    console.log('Starting IRIS...')
+    StartIRIS(event)
+  })
+
+  ipcMain.on('iris:stop-session', () => {
+    console.log('Stopping IRIS...')
+    stopIRIS()
+  })
+
+  ipcMain.on('iris:toggle-mic', (_event, isMuted: boolean) => {
+    console.log(`Toggling Mic... Muted state: ${isMuted}`)
+    toggleIRISMic(isMuted)
+  })
+
+  ipcMain.handle('iris:get-history', async () => {
+    return await getMemory()
+  })
+
+  ipcMain.on('iris:send-vision-frame', (_event, base64Data: string) => {
+    pushVisionToGemini(base64Data)
+  })
+
+  registerSystemHandlers(ipcMain)
+
   createWindow()
 
   app.on('activate', function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
-})
-
-app.on('will-quit', () => {
-  globalShortcut.unregisterAll()
 })
 
 app.on('window-all-closed', () => {
