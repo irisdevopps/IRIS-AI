@@ -20,7 +20,3 @@ credentials.json
 gmail_token.json
 global
 eng.traineddata
-
-agents
-IRISB.tsx
-tools.ts
