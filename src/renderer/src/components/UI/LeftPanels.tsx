@@ -441,7 +441,6 @@ export default function LeftPanelsPremium({
 
       <PremiumGlassPanel accent="cyan" glow className="group">
         <div className="p-3 flex flex-col gap-3">
-          {/* Header */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <IconBadge icon={<Radio size={14} />} color="#22d3ee" active={isActive} />
