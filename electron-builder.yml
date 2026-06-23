@@ -3,8 +3,6 @@ productName: IRIS AI
 directories:
   buildResources: build
 
-
-
 asar: true
 compression: maximum
 
