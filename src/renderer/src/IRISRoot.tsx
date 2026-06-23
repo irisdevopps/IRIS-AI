@@ -19,6 +19,7 @@ const IndexRoot = () => {
       // @ts-ignore
       window.iris.startSession()
       setIsConnected(true)
+      setIsSpeaking(true)
     }
   }
 
