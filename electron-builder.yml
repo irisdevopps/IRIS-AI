@@ -1,4 +1,4 @@
-appId: com.irisx.irisai
+appId: com.irisx.irisai.test
 productName: IRIS AI
 directories:
   buildResources: build
