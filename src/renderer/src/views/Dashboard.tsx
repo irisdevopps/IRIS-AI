@@ -127,28 +127,6 @@ export default function Dashboard({
                   <Phone size={18} strokeWidth={2.5} />
                 )}
               </div>
-
-              {/* Status Text */}
-              <div className="flex flex-col justify-center min-w-22.5">
-                <span
-                  className={`text-[11px] tracking-widest font-mono font-bold uppercase transition-colors leading-tight ${
-                    systemStatus === 'CONNECTING'
-                      ? 'text-yellow-400 animate-pulse'
-                      : isConnected
-                        ? 'text-[#00ff41] drop-shadow-[0_0_5px_rgba(0,255,65,0.5)]'
-                        : 'text-zinc-300'
-                  }`}
-                >
-                  {systemStatus === 'CONNECTING'
-                    ? 'SERVER PINGING...'
-                    : isConnected
-                      ? 'IRIS Online'
-                      : 'IRIS Offline'}
-                </span>
-                <span className="text-[8px] text-zinc-500 tracking-[0.2em] font-mono mt-0.5 uppercase">
-                  {isConnected ? 'Neural Network' : 'Awaiting Cmd'}
-                </span>
-              </div>
             </div>
 
             {/* ── AUDIO/MIC TOGGLE ── */}
