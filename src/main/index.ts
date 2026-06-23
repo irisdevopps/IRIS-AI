@@ -90,33 +90,6 @@ app.on('second-instance', (event, commandLine) => {
   }
 })
 
-function toggleOverlayMode() {
-  if (!mainWindow) return
-
-  const primaryDisplay = screen.getPrimaryDisplay()
-  const { width, height } = primaryDisplay.workAreaSize
-
-  if (isOverlayMode) {
-    mainWindow.setResizable(true)
-    mainWindow.setAlwaysOnTop(false)
-    mainWindow.setBounds({ width: 950, height: 670 })
-    mainWindow.center()
-    mainWindow.webContents.send('overlay-mode', false)
-  } else {
-    const w = 340
-    const h = 70
-    mainWindow.setBounds({
-      width: w,
-      height: h,
-      x: Math.floor(width / 2 - w / 2),
-      y: height - h - 50
-    })
-    mainWindow.setAlwaysOnTop(true, 'screen-saver')
-    mainWindow.setResizable(false)
-    mainWindow.webContents.send('overlay-mode', true)
-  }
-  isOverlayMode = !isOverlayMode
-}
 
 app.whenReady().then(() => {
   electronApp.setAppUserModelId('com.electron')
