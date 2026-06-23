@@ -144,11 +144,6 @@ app.whenReady().then(() => {
     }
   })
 
-  ipcMain.handle('get-screen-source', async () => {
-    const sources = await desktopCapturer.getSources({ types: ['screen'] })
-    return sources[0]?.id
-  })
-
   createWindow()
 
   app.on('activate', function () {
