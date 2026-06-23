@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import * as faceapi from 'face-api.js'
 import { GiArtificialIntelligence } from 'react-icons/gi'
 import {
   RiKey2Line,
