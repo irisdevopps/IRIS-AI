@@ -1,3 +1,6 @@
+> **[TIER ALIGNMENT: IRIS MAX COMMERCIAL LICENSE REQUIRED]**
+> *This document covers core voice orchestration loops, tools, and execution pipelines protected under the $250 IRIS MAX License.*
+
 # 🏗️ System Architecture
 
 IRIS operates on a strictly separated architecture for maximum security and performance.

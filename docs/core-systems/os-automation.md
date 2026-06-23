@@ -1,3 +1,6 @@
+> **[TIER ALIGNMENT: IRIS MAX COMMERCIAL LICENSE REQUIRED]**
+> *This document covers core voice orchestration loops, tools, and execution pipelines protected under the $250 IRIS MAX License.*
+
 # OS Automation
 
 > **Execution over Conversation.**

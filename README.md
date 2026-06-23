@@ -89,29 +89,24 @@ It is a **Voice-First Desktop AI Assistant** that executes real-world actions ac
 
 ---
 
-# 🪡 Open Core Model
+# 🪡 Commercial Open-Core Model Matrix
 
-### IRIS follows an Open Core development model.
+### IRIS follows a strict Commercial Open-Core model.
 
-**The public repository includes**:
+We enforce two strict architectural tiers across all deployments:
 
-- Desktop application framework
-- User interface
-- Core infrastructure
-- Selected integrations
-- Community-facing examples
+## 1. IRIS Community Edition (Free & Open Source)
+- **Framework Access:** Access to the high-performance desktop framework shell (Electron + Vite + React 19 + Tailwind v4).
+- **Customization:** Fully customizable UI layouts, themes, widgets, and standard window management.
+- **Licensing:** Built under the permissive MIT License for public contributions.
+- **Restrictions:** Core AI routing, background execution loops, and autonomous system tools are disabled/hidden.
 
-The following production components are private:
-
-- Core voice orchestration engine
-- Advanced tool execution logic
-- Internal automation systems
-- Production-grade implementations
-- Certain premium modules
-
-GitHub Sponsors receive access to additional documentation, implementation examples, architecture breakdowns, and development resources depending on tier.
-
-**Sponsorship does not include access to the complete private source code.**
+## 2. IRIS MAX (Commercial Core License)
+- **Cost:** $250 / Approx. ₹22,000 One-Time
+- **Full Binary Access:** Grants a lifetime, single-seat perpetual license to the fully compiled, highly protected native binary core.
+- **Core Unlock:** Unlocks the core voice orchestration loops, Gemini 3.1 Live API WebRTC bidirectional streaming, and local LanceDB vector search.
+- **Advanced Utilities:** Unlocks advanced, automated system utilities: Deep Research Agent, ScreenPeeler OCR, Phantom Typer, Livecoding, and Mobile Telekinesis.
+- **Security Guardrails:** Protected completely via native V8 Bytecode compilation and strict server-side cryptographic hardware identity (HWID) verification guards.
 
 ---
 
@@ -288,42 +283,25 @@ IRIS uses **enterprise-grade code protection** to secure proprietary agent logic
 
 ---
 
-# ⚡ Why Upgrade to IRIS Pro?
+# ⚡ Why Upgrade to IRIS MAX?
 
-IRIS is built on an **Open Core model**. While the Free Tier (Public Repository) gives you access to the community UI and basic templates, the **core voice engine, agent loops, and advanced execution tools** are protected within the IRIS Pro ecosystem.
+IRIS is built on a **Commercial Open-Core model**. While the Community Edition gives you access to the community UI and basic templates, the **core voice engine, agent loops, and advanced execution tools** are protected within the IRIS MAX ecosystem.
 
-Upgrading to **IRIS Pro (₹499 base license + platform processing fee (Final Checkout: ₹513))** unlocks the complete autonomous OS controller experience.
+Upgrading to **IRIS MAX** unlocks the complete autonomous OS controller experience.
 
-## 🎁 Free Tier (Base Engine)
+### Core Value Justification Protocol
 
-**Cost:** Free
-
-- Access to the public frontend shell (React + Tailwind)
-- Community Layout Config & Themes
-- Standard PIN-only OS Vault lockdown
-- Basic UI Widgets & Desktop Shell structure
-
-## 🚀 IRIS Paid Pro
-
-**Cost:** ₹499 base license + platform processing fee (Final Checkout: ₹513)
-
-- **Instant License Activation:** Pay once, keep it forever. No subscriptions.
-- **Hands-Free Wake Up Word:** Passive offline activation ("Hey, IRIS").
-- **ScreenPeeler Multimodal AI OCR:** Instantly scan and extract text/code from your screen (Ctrl+Alt+X).
-- **Phantom Ghost Keyboard:** Global inline injection (Ctrl+Alt+Space).
-- **Mobile Telekinesis (Android):** Full ADB remote actions, telemetry, and file pushing.
-- **Deep Research Agent:** Multi-step autonomous web crawling and data gathering.
-- **Localhost Wormhole:** Instantly expose local ports to the public internet.
-- **OS Vault Security:** Biometric Face Recognition + PIN lockdown.
-- **Direct Pro Access:** Fully functional local execution engine.
+- **Zero Subscriptions / Permanent Ownership:** Pay once, own the local infrastructure forever.
+- **Ironclad Security & IP Rights:** Fully compiled V8 machine bytecode execution ensuring corporate zero-trust deployment.
+- **Deep Hardware Guardrails:** Immutable cryptographic HWID checking that restricts a standard Max license to up to 2 active personal developer machines, with a secure 3-month backend unbind cooldown rotation rule to prevent unauthorized redistribution.
 
 ### How to Upgrade?
 
 1. **Authenticate with Google** to create your secure identity.
-2. **Purchase a License** via our Secure Checkout (Razorpay).
-3. **Unlock the IRIS PRO** instantly.
+2. **Purchase a License** via our Secure Checkout.
+3. **Unlock IRIS MAX** instantly.
 
-[**Compare Free vs Pro Features in Detail**](/compare)
+[**Compare Community vs MAX Features in Detail**](/compare)
 
 ---
 

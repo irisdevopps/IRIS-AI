@@ -1,3 +1,6 @@
+> **[TIER ALIGNMENT: IRIS MAX COMMERCIAL LICENSE REQUIRED]**
+> *This document covers core voice orchestration loops, tools, and execution pipelines protected under the $250 IRIS MAX License.*
+
 # System Design and Architecture
 
 IRIS utilizes a strict split-process architecture to ensure security, high performance, and UI responsiveness. The system is divided into an untrusted frontend and a highly privileged, protected backend.

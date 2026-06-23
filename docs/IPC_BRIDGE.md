@@ -1,3 +1,6 @@
+> **[TIER ALIGNMENT: IRIS MAX COMMERCIAL LICENSE REQUIRED]**
+> *This document covers core voice orchestration loops, tools, and execution pipelines protected under the $250 IRIS MAX License.*
+
 # 🌉 Inter-Process Communication (IPC)
 
 The IPC Bridge secures the boundary between the untrusted UI and the protected OS-level backend.
