@@ -97,10 +97,12 @@ function ParticleShell({ isConnected, isSpeaking }: { isConnected: boolean; isSp
         <bufferAttribute
           attach="attributes-position"
           args={[positions, 3]}
+          // @ts-ignore
           usage={THREE.DynamicDrawUsage}
         />
       </bufferGeometry>
       <pointsMaterial
+        // @ts-ignore
         size={0.018}
         transparent
         opacity={0.3}
@@ -162,6 +164,7 @@ function OrbitalRing({
       <torusGeometry args={[radius, tube, 2, 48]} />
       <meshBasicMaterial
         ref={matRef}
+        // @ts-ignore
         color={RING_COLOR}
         transparent
         opacity={0.06}
