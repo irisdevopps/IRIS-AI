@@ -419,23 +419,13 @@ cd IRIS-AI
 npm install
 ```
 
-### 3. Add API Keys
-
-Create `.env` file (copy from `.env.example`):
-
-```env
-VITE_GEMINI_API_KEY=your_gemini_key
-VITE_GROQ_API_KEY=your_groq_key
-VITE_TAVILY_API_KEY=your_tavily_key
-```
-
-### 4. Run Development Server
+### 3. Run Development Server
 
 ```bash
 npm run dev
 ```
 
-### 5. Build Production
+### 4. Build Production
 
 ```bash
 npm run build:win    # Windows
