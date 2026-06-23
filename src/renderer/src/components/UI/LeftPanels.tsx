@@ -9,8 +9,6 @@ import {
   ArrowDown,
   Radio
 } from 'lucide-react'
-import { getSystemStatus, SystemStats } from '@renderer/services/system-info'
-import { LeftPanelsProps } from '@renderer/types/panel'
 
 function getHealthColor(value: number, type: 'cpu' | 'ram' | 'temp') {
   let ratio = Math.min(1, Math.max(0, value / 100))
@@ -136,7 +134,9 @@ function MetricValue({
   return (
     <div className="flex items-baseline gap-1">
       {prefix && <span className="font-mono text-[9px] text-white/40 font-light">{prefix}</span>}
-      <span className={`font-mono font-bold text-xl tracking-tight ${statusColors[status || 'idle']}`}>
+      <span
+        className={`font-mono font-bold text-xl tracking-tight ${statusColors[status || 'idle']}`}
+      >
         {value}
       </span>
       {unit && (
@@ -243,10 +243,7 @@ function BootSequence({ isActive, osType }: { isActive: boolean; osType: string 
   )
 }
 
-export default function LeftPanelsPremium({
-  status,
-  visionMode
-}: LeftPanelsProps & { visionMode?: 'off' | 'camera' | 'screen' }) {
+export default function LeftPanelsPremium({ status, visionMode }: any) {
   const isActive = status !== 'STANDBY'
 
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -406,7 +403,9 @@ export default function LeftPanelsPremium({
 
             <div
               className={`absolute inset-0 z-20 flex flex-col items-center justify-center gap-2 transition-opacity duration-500 ${
-                !visionMode || visionMode === 'off' ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                !visionMode || visionMode === 'off'
+                  ? 'opacity-100'
+                  : 'opacity-0 pointer-events-none'
               }`}
             >
               <Camera
