@@ -22,7 +22,6 @@ const IndexRoot = () => {
   const handleMicToggle = () => {
     const nextMutedState = !isMuted
     setIsMuted(nextMutedState)
-
   }
 
   return (
