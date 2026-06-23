@@ -1,6 +1,6 @@
 import { app, shell, BrowserWindow, ipcMain, globalShortcut } from 'electron'
 import path, { join } from 'path'
-import { electronApp, optimizer, is } from '@electron-toolkit/utils'
+import { electronApp, optimizer } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
 if (process.defaultApp) {
