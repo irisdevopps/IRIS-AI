@@ -9,8 +9,7 @@ import {
   ArrowDown,
   Radio
 } from 'lucide-react'
-import { getSystemStatus, SystemStats } from '@renderer/services/system-info'
-import { LeftPanelsProps } from '@renderer/types/panel'
+import { getSystemStatus } from '@renderer/services/system-info'
 
 function getHealthColor(value: number, type: 'cpu' | 'ram' | 'temp') {
   let ratio = Math.min(1, Math.max(0, value / 100))
@@ -136,7 +135,9 @@ function MetricValue({
   return (
     <div className="flex items-baseline gap-1">
       {prefix && <span className="font-mono text-[9px] text-white/40 font-light">{prefix}</span>}
-      <span className={`font-mono font-bold text-xl tracking-tight ${statusColors[status || 'idle']}`}>
+      <span
+        className={`font-mono font-bold text-xl tracking-tight ${statusColors[status || 'idle']}`}
+      >
         {value}
       </span>
       {unit && (
@@ -190,8 +191,6 @@ function BootSequence({ isActive, osType }: { isActive: boolean; osType: string 
 
     if (bootPhase) {
       const logs = [
-        '› KERNEL_INIT ........... OK',
-        '› MOUNT_VFS ............. OK',
         '› HW_TELEM_LINK ..... SYNC',
         '› OPTICS_DRIVER ... READY',
         '› SYSTEM_READY ........ ✓'
@@ -203,7 +202,7 @@ function BootSequence({ isActive, osType }: { isActive: boolean; osType: string 
           i++
         } else {
           clearInterval(bootInterval)
-          setTimeout(() => setBootPhase(false), 800)
+          setTimeout(() => setBootPhase(false), 100)
         }
       }, 100)
       return () => clearInterval(bootInterval)
@@ -243,17 +242,14 @@ function BootSequence({ isActive, osType }: { isActive: boolean; osType: string 
   )
 }
 
-export default function LeftPanelsPremium({
-  status,
-  visionMode
-}: LeftPanelsProps & { visionMode?: 'off' | 'camera' | 'screen' }) {
+export default function LeftPanelsPremium({ status, visionMode }: any) {
   const isActive = status !== 'STANDBY'
 
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const streamRef = useRef<MediaStream | null>(null)
 
-  const [stats, setStats] = useState<SystemStats>({
+  const [stats, setStats] = useState<any>({
     cpu: '0.0',
     memory: { total: '0.0', free: '0.0', usedPercentage: '0.0' },
     temperature: 0,
@@ -406,7 +402,9 @@ export default function LeftPanelsPremium({
 
             <div
               className={`absolute inset-0 z-20 flex flex-col items-center justify-center gap-2 transition-opacity duration-500 ${
-                !visionMode || visionMode === 'off' ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                !visionMode || visionMode === 'off'
+                  ? 'opacity-100'
+                  : 'opacity-0 pointer-events-none'
               }`}
             >
               <Camera
