@@ -11,13 +11,9 @@ const IndexRoot = () => {
 
   const toggleConnection = () => {
     if (isConnected) {
-      // @ts-ignore
-      window.iris.stopSession()
       setIsConnected(false)
       setIsMuted(false)
     } else {
-      // @ts-ignore
-      window.iris.startSession()
       setIsConnected(true)
       setIsSpeaking(true)
     }
