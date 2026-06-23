@@ -38,7 +38,6 @@ const IndexRoot = () => {
         <IRIS
           isConnected={isConnected}
           toggleConnection={toggleConnection}
-          systemStatus={systemStatus}
           isSpeaking={isSpeaking}
           isMuted={isMuted}
           handleMicToggle={handleMicToggle}
