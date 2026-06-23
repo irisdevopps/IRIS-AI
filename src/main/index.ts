@@ -90,7 +90,6 @@ app.on('second-instance', (event, commandLine) => {
   }
 })
 
-
 app.whenReady().then(() => {
   electronApp.setAppUserModelId('com.electron')
 
