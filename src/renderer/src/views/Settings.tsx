@@ -13,10 +13,6 @@ import {
   RiShieldKeyholeLine,
   RiPlugLine,
   RiTerminalWindowLine,
-  RiRefreshLine,
-  RiDownloadCloud2Line,
-  RiRocketLine,
-  RiInformationLine
 } from 'react-icons/ri'
 
 interface SettingsProps {
