@@ -87,18 +87,6 @@ export default function SettingsView({ isSystemActive }: SettingsProps) {
     }
   }
 
-  const unlockSecurityModule = async () => {
-    if (!window.electron?.ipcRenderer) return
-    const isValid = await window.electron.ipcRenderer.invoke('verify-vault-pin', authPin)
-    if (isValid) {
-      setIsSecurityUnlocked(true)
-      setAuthPin('')
-    } else {
-      setAuthError(true)
-      setTimeout(() => setAuthError(false), 1000)
-    }
-  }
-
   const inputContainerClass =
     'flex items-center bg-black/40 border border-white/10 rounded-lg px-4 py-3 focus-within:border-emerald-500 focus-within:ring-1 focus-within:ring-emerald-500 transition-all duration-200 w-full'
   const labelClass = 'text-sm text-zinc-300 font-medium flex items-center gap-2 mb-2'
