@@ -68,7 +68,6 @@ export default function Dashboard({
                 </div>
               )}
 
-              {/* Optics Base Button */}
               <button
                 onClick={() => isConnected && setShowVisionMenu(!showVisionMenu)}
                 disabled={!isConnected}
@@ -98,7 +97,6 @@ export default function Dashboard({
               </button>
             </div>
 
-            {/* ── CORE CONNECTION TOGGLE ── */}
             <div
               onClick={toggleConnection}
               className={`flex items-center gap-3 cursor-pointer pr-5 pl-1.5 py-1.5 rounded-full border transition-all duration-300 ${
@@ -107,7 +105,6 @@ export default function Dashboard({
                   : 'bg-zinc-900/50 border-white/5 hover:border-white/20 hover:bg-zinc-900/80'
               }`}
             >
-              {/* Call Icon Circle */}
               <div
                 className={`w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300 shadow-lg ${
                   isConnected
@@ -123,7 +120,6 @@ export default function Dashboard({
               </div>
             </div>
 
-            {/* ── AUDIO/MIC TOGGLE ── */}
             <button
               onClick={handleMicToggle}
               disabled={!isConnected}
